@@ -88,10 +88,69 @@ m03.put(\durs, [0.5, 0.5 , 0.5, 0.5]);
 melCells = [m01,m02,m03];
 }
 
+/***********************************************
+*** 1-B Setting up a performance's parameters  *
+************************************************/
 
-/****************************************************************
-*** 1-B Computing the number of desired repetitions per pattern *
-*****************************************************************/
+// 1-B-1 Setting up general performance parameters
+//TO DO:  Using global variables for now, will fix later.
+
+(
+  // - Setup performance parameters: performance length, tempo, number of players, instruments
+  //Performance basic time parameters
+
+
+   var performLength = [2, 3];  // Riley's instructions say 45 to 90'
+   var perfTempo = 100; // In standard bpm. Riley is rather vague about tempo
+   var players = 2;     // Typically 35, as per score's instructions
+   ~addRepsToCells.value(~melCells, performLength,  perfTempo);
+
+
+   //- Create melodic cells
+   ~melCells = ~createMelPatterns.value;
+
+
+   // - Create required players with associated instruments
+    ~players = 2    ;
+);
+
+
+
+/*********************************
+*** 1-C Creating the players *
+**********************************/
+
+/*
+A player must:
+  1. Create a score by choosing a variable number of repeats for each patterns, within the allowed limits
+  2. Set up an instrument to play the created score
+  3. more?
+*/
+
+/*
+
+- Each player must have, at a minimum, a version of the score and an instrument to play it on.
+  Other parameters may be added later.
+- There are at least two possible options for player creation (looking forward to full implementation):
+   a - Create every player individually, and customize them one by one
+   b - Instantiate a random number of players into a vector, then customize them
+
+ - There are also at least two possible options for score creation:
+   a - create each player's complete score before executing the performance
+   b - have each player instantiate the needed number of repetitions for each melodic cell
+       *during* the performance (simulating an actual performance as originally intended)
+   Option b is more interesting and leave open the possibility of inserting (later)
+   some interaction with the performance suring execution, but it is also more complex.
+
+I will start with the simpler (a) options first.
+*/
+
+
+
+/* :
+/********************************************************************************
+*** 1-C Create the score (Compute the number of desired repetitions per pattern *
+*********************************************************************************/
 
 /*
     - We divide the desired performance length in seconds by the number of patterns
@@ -127,28 +186,6 @@ melCells = [m01,m02,m03];
 		     item.put(\reps,minMaxReps); });
     }
 );
-/*********************************
-*** 1-C Creating the players *
-**********************************/
-
-/*
-
-- Every player is a function containing a Pbind pattern controlled by a few parameters
-- Two possible options (looking forward to full implementation):
-   a - Create every player individually, and customize them one by one
-   b - Instantiate a random number of players into a vector, then customize them
-
-    I will start with the simpler option first
-*/
-
-/*
-A player must:
-  1. Create a score by choosing a variable number of repeats for each patterns, within the allowed limits
-  2. Set up an instrument to play the created score
-  3. more?
-*/
-
-/* Create the score:
 
 */
 
@@ -156,27 +193,6 @@ A player must:
 *** 1-D Performing the score     *
 **********************************/
 
-// 1-D-1 Setting up performance parameters
-//TO DO:  Using global variables for now, will fix later.
-
-(
-  // - Setup performance parameters: performance length, tempo, number of players, instruments
-  //Performance basic time parameters
-
-
-   var performLength = [2, 3];  // Riley's instructions say 45 to 90'
-   var perfTempo = 100; // In standard bpm. Riley is rather vague about tempo
-   var players = 2;     // Typically 35, as per score's instructions
-   ~addRepsToCells.value(~melCells, performLength,  perfTempo);
-
-
-   //- Create melodic cells
-   ~melCells = ~createMelPatterns.value;
-
-
-   // - Create required players with associated instruments
-    ~players = 2    ;
-);
 
 
 // 1-D-2 Start the performance
