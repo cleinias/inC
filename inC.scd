@@ -42,6 +42,40 @@ A supercollider rendition of Terry Riley's In C that follows Riley's score instr
 - no transposition
 */
 
+
+/******************************
+*** 0- General setup          *
+*******************************/
+
+/*
+All data and algorithms of In C are contained in three main objects:
+
+- MelodicPatterns
+  The repository of melody cells
+
+- Performance
+  Contains parameters about number of players, duration, and tempo (for now)
+
+- Players
+  Data about the players, including their scores and instruments
+
+In this first test, the three main objects are represented by environment variables:
+
+   -- ~melPatterns
+    - ~performance
+    - ~player
+
+Refactoring to proper classes will happen later. Performance is the main object. It has:
+
+ - an instance of melodic patterns (melPatterns)
+ - a set of performance parameters
+ - a collection of players instantiated on the basis of the performance parameters
+ - an actual score generated on the basis of performance parameters (possibly. See notes on payesr below)
+
+Refactoring will translate the above to classes, of course.
+*/
+
+
 /******************************
 *** 1-A creating the patterns *
 *******************************
@@ -93,7 +127,7 @@ melCells = [m01,m02,m03];
 ************************************************/
 
 // 1-B-1 Setting up general performance parameters
-//TO DO:  Using global variables for now, will fix later.
+//TO DO:  Using a global variable for all performance-related parameters for now, will fix later.
 
 (
   // - Setup performance parameters: performance length, tempo, number of players, instruments
@@ -278,3 +312,5 @@ Pflatten(1, Pdup(Pwhite(2, 5, inf), Pseq(~cells, inf)))
 
 20.10.rand2;
 rrand(24, 48)
+
+ Quarks.gui 
