@@ -93,27 +93,38 @@ melCells = [m01,m02,m03];
 *** 1-B Computing the number of desired repetitions per pattern *
 *****************************************************************/
 
-/* We run over the duration vectors of each pattern  and
-   - compute length in beats,
-   - convert beats length to seconds on the basis of tempo
-   - divide and round expected pattern min and max total lengths
-   - Finally put values of min and max repetitions into each pattern's dictionary
+/*
+    - We divide the desired performance length in seconds by the number of patterns
+      to get an appr. length for each performed pattern
+    - run over the duration vectors of each pattern and
+       - compute the pattern length in seconds (duration in beats / beats per seconds)
+       - divide the approx length i nsec by the pattern lengths in sec to get the needed reps
+       - Put the number in the pattern's dictionary
+
 */
 
 (~addRepsToCells = {
    // Compute the average number of reps per pattern (cells)
-   // needed to reach desired min and max performance lengths
+   // needed to (approximately) reach desired performance length
    // in minutes (minMaxLengths) at given tempo in bpm (perfTempo)
    // add the computed reps to the cells's dictionary'
+
+	//TODO: redo completely on the basis of notes above
+	// Now it is all wrong
+
    |cells  minMaxLengths perfTempo|
-   var beatLength, secsLength, minMaxReps;
+   var beatLength, totSecsLength, minMaxBeatLengths;
    beatLength = cells.collect({
             |item i|
             item[\durs].sum}).sum;
-    secsLength = beatLength / (perfTempo/60);
-    minMaxReps = [((minMaxLengths[0]*60)/secsLength).round.asInteger;,
-                  ((minMaxLengths[1]*60)/secsLength).round.asInteger];
-   cells.do({|item i| item.put(\reps,minMaxReps); });
+    totSecsLength = beatLength / (perfTempo/60);
+    minMaxBeatLengths= [((minMaxLengths[0]*60)/totSecsLength)          .round.asInteger;,
+                       ((minMaxLengths[1]*60)/totSecsLength).round.asInteger];
+   cells.do({|item i|
+		     var cellSecsLenghts;
+		cellSecLengths[0]= minMaxLengths[0]*60*(item.[\dur].sum / beatLength);
+		cellSecLengths[1]= minMaxLengths[1]*60*(item.[\dur].sum / beatLength);
+		     item.put(\reps,minMaxReps); });
     }
 );
 /*********************************
@@ -208,7 +219,7 @@ A player must:
 	                  ((~scratchDesiredLength[1]*60)/~singleRepLength).round.asInteger];
 //Min and max numbers of reps of total 53 patterns to achieve desired performance length
 ~scratchMinMaxReps.do({ |item i|
-	"tempo".postln;
+	"tempo".postln;do
 })
 )
 (a = [3,5];
@@ -222,13 +233,13 @@ b.postln;
 (~pitches = [];
 ~cells = [ [ 1, 3, 5, 7], [1, 3, 2]];
 ~minMax = [2,5] ;
-~pitches = Pseq(
-	~cells.collect({
+~pitches = 	~cells.collect({
 		|item i|
 		var reps;
 		reps = rrand(~minMax[0], ~minMax[1]);
-		item ! reps;
-	}).postln;
+		(item ! reps).flatten(0); // ! is a shorcut for Array.dup()
+	});
+~pitches.flatten(2).postln;
 );
 )
 (
@@ -243,6 +254,7 @@ Pswitch(
 )
 
 (
+~cells = [ [ 1, 3, 5, 7], [1, 3, 2]];
 Pflatten(1, Pdup(Pwhite(2, 5, inf), Pseq(~cells, inf)))
 .asStream.nextN(50)
 )
