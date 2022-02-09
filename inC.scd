@@ -119,8 +119,14 @@ m03.put(\pitches, [Rest(),3,4,3]);   // pattern starts with a rest
 m03.put(\durs, [0.5, 0.5 , 0.5, 0.5]);
 
 // Vector with all melodic patterns
+melCells.postln;
 melCells = [m01,m02,m03];
 }
+)
+//testing
+(
+a = ~createMelPatterns.value;
+a.inspect;
 )
 /***********************************************
 *** 1-B Setting up a performance's parameters  *
@@ -132,7 +138,9 @@ melCells = [m01,m02,m03];
 (
 ~createPerformance = {
   /* - Setup performance parameters: performance length, tempo, number of players, instruments
+  // - Also setup environment (initialize Midi connections, setup midi ports, etc.)
   // Return a dictionary.
+  //
   // Parameters
   // - playersNum (self-explanatory)
   // - length in minutes (Riley's instructions say 45 to 90', but we default to 5)
@@ -150,13 +158,15 @@ melCells = [m01,m02,m03];
     performance[\playersNum]=playersNum;
     performance[\performLength]=performLength;
     performance[\basicScore]=[patternsFunction.value];
-    //TODO: create the required number of players with individual scores and instruments
-
-    performance;
+    performance[\players]=playersNum.collect{
+        |item i|
+        ~createPlayer.value(performance[\basicScore], performLength, tempo, nil)};
+    //return the performance object
+    ^performance;
 }
 )
 //testing
-~createPerformance.value(patternsFunction:~createMelPatterns)
+p=~createPerformance.value(patternsFunction:~createMelPatterns);
 
 /*********************************
 *** 1-C Creating the players *
@@ -187,19 +197,96 @@ A player must:
 I will start with the simpler (a) options first.
 */
 
+/*
+ The following (simplified) example from the docs works fine (assuming Midi Through is connected to an actual synth,
+ I used fluidsynth to test).
+ TODO: Not clear how to connect to other midi in ports, though. Check the destination (after init) with:
+ MIDIClient.destinations;
 
+
+// MIDIClient.init;    // if not already done
+//
+
+(
+// substitute your own device here
+var    mOut = MIDIOut.newByName("Midi Through", "Midi Through Port-0").latency_(Server.default.latency);
+
+p = Pbind(
+    \type, \midi,
+    // this line is optional b/c noteOn is the default
+    // just making it explicit here
+    \midicmd, \noteOn,
+    \midiout, mOut,    // must provide the MIDI target here
+    \chan, 0,
+    // degree is converted to midinote, not just frequency
+    \degree, Pseq([1,3,5,8],1),
+    \dur, Pseq([1,1,1,1], inf),
+).play(quant: 1);
+)
+
+p.stop;
+*/
+
+(
+~createPlayer = {
+    /* Return a player object (aDictionary) with a full instantiated score constructed
+       from melCells and lengths, plus an instrument to play it with
+       melCells is the dictionary of melodic cells,
+       perfLength is desired performance length in minutes
+       tempo in bpm
+       instrument is still to be decided, most likely a synthDef,
+                  unless the output is redirected to Ardour via MIDI
+                 (see docs: Using patterns for sending MIDI events, Pattern Guide Cookbook 4.
+                            It seems all it's needed is a midi port and a midi channel)*/
+
+        | melCells perfLength tempo instrument|
+
+    var desLengthBeats, actualScore, player;
+    actualScore = Array.new(melCells.size);
+    player = Dictionary.new();
+
+    desLengthBeats = (((perfLength * 60) / melCells.size)*(tempo/60)).round;  //appr. desired lengths in beats of each cell
+    melCells.do{
+        |item i|
+        var cellBeats, reps, cell;
+        cell = Dictionary.new;
+        cellBeats = item[\durs].sum;
+        reps = ((desLengthBeats/cellBeats)+0.5).round; //approximate number of reps needed, minimum of 1
+        cell[\pitches]  = item[\pitches];
+        cell[\durs] = item[\durs];
+        cell[\reps]=reps;
+        // we may want to add some more stuff here in the future,
+        // such as likelihood of octave jumps, slight push/drag, etc.
+        actualScore.add(cell); //add the computed cell to the player's actual score array
+        // "I am here".postln;
+        // actualScore.postln;
+       };
+    player[\score]=actualScore;
+    // not implemented yet
+    player[\instrument]=0;
+    };
+//)
+
+//(
+//testing player creation
+a = ~createMelPatterns.value;
+//a.class;
+b = ~createPlayer.value(melCells:a, perfLength:5, tempo:100, instrument:nil);
+b.inspect;
+)
 
 /* :
 /********************************************************************************
 *** 1-C Create the score (Compute the number of desired repetitions per pattern *
-*********************************************************************************/
+********************************************************************************
+*/
 
 /*
     - We divide the desired performance length in seconds by the number of patterns
       to get an appr. length for each performed pattern
     - run over the duration vectors of each pattern and
        - compute the pattern length in seconds (duration in beats / beats per seconds)
-       - divide the approx length i nsec by the pattern lengths in sec to get the needed reps
+       - divide the approx length in sec by the pattern lengths in sec to get the needed reps
        - Put the number in the pattern's dictionary
 
 */
