@@ -29,7 +29,7 @@ A supercollider rendition of Terry Riley's In C that follows Riley's score instr
 12. Transposing down by octaves works best on the patterns
     containing notes of long durations.
 13. Augmentation of rhythmic values can also be effective.
-14. IN C is ended in this way: when each performer arrives at figure #53,
+14. In C is ended in this way: when each performer arrives at figure #53,
     he or she stays on it until the entire ensemble has arrived there.
 15. The group then makes a large crescendo and diminuendo a few times
     and each player drops out as he or she wishes.
@@ -86,7 +86,7 @@ Refactoring will translate the above to classes, of course.
 - Durations are indicated in fraction of a beat
 */
 
-
+(
 ~createMelPatterns = {
 	// Create all the 53 melodic patterns in Riley's "In C"
 	// Return a vector of dictionaries, one per pattern
@@ -121,34 +121,42 @@ m03.put(\durs, [0.5, 0.5 , 0.5, 0.5]);
 // Vector with all melodic patterns
 melCells = [m01,m02,m03];
 }
-
+)
 /***********************************************
 *** 1-B Setting up a performance's parameters  *
 ************************************************/
 
 // 1-B-1 Setting up general performance parameters
-//TO DO:  Using a global variable for all performance-related parameters for now, will fix later.
+//TO DO:  Using a function for all performance-related parameters for now, will fix later with a proper class.
 
 (
-  // - Setup performance parameters: performance length, tempo, number of players, instruments
-  //Performance basic time parameters
+~createPerformance = {
+  /* - Setup performance parameters: performance length, tempo, number of players, instruments
+  // Return a dictionary.
+  // Parameters
+  // - playersNum (self-explanatory)
+  // - length in minutes (Riley's instructions say 45 to 90', but we default to 5)
+  // - tempo (In standard bpm. Riley is rather vague about tempo)
+  // - patternsFunction is a function that creates the vector of melodic cells.
+        It the only parameters that does not have a default and must always be passed.
+        It will eventually be replaced with a proper method to the MelodicCells class
+  */
+    |playersNum = 2 , performLength = 5, tempo = 120, patternsFunction |
+    var performance = Dictionary.new;
+    patternsFunction.postln;
+    if (patternsFunction.isNil, {"Error: Performance needs a vector of melody cells to be instantiated".postln});
 
+    performance[\tempo]=tempo;
+    performance[\playersNum]=playersNum;
+    performance[\performLength]=performLength;
+    performance[\basicScore]=[patternsFunction.value];
+    //TODO: create the required number of players with individual scores and instruments
 
-   var performLength = [2, 3];  // Riley's instructions say 45 to 90'
-   var perfTempo = 100; // In standard bpm. Riley is rather vague about tempo
-   var players = 2;     // Typically 35, as per score's instructions
-   ~addRepsToCells.value(~melCells, performLength,  perfTempo);
-
-
-   //- Create melodic cells
-   ~melCells = ~createMelPatterns.value;
-
-
-   // - Create required players with associated instruments
-    ~players = 2    ;
-);
-
-
+    performance;
+}
+)
+//testing
+~createPerformance.value(patternsFunction:~createMelPatterns)
 
 /*********************************
 *** 1-C Creating the players *
