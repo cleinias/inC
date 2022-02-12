@@ -84,49 +84,82 @@ Refactoring will translate the above to classes, of course.
 - The pattern dictionaries are then stored in a vector containing all the melodic patterns (melCells)
 - Pitches are specified in degrees
 - Durations are indicated in fraction of a beat
-*/
+*/  z=Dictionary.newFR
 
 (
 ~createMelPatterns = {
 	// Create all the 53 melodic patterns in Riley's "In C"
 	// Return a vector of dictionaries, one per pattern
-	var m01, m02, m03, m04, m05, m06, m07, m08, m09, m10;
-	var m11, m12, m13, m14, m15, m16, m17, m18, m19, m20;
-	var m21, m22, m23, m24, m25, m26, m27, m28, m29, m30;
-	var m31, m32, m33, m34, m35, m36, m37, m38, m39, m40;
-	var m41, m42, m43, m44, m45, m46, m47, m48, m49, m50;
-	var m51, m52, m53;
+
 	var melCells;
-
-
-// Pattern 1
-m01 = Dictionary();
-m01.put(\pitches, [1,3,1,3,1,3]);
-//Acciaccatura to a quarter note rendered as 1/32 note (1/8 of a beat):
-m01.put(\durs, [0.125, 0.875, 0.125, 0.875, 0.125, 0.875]);
-
-// Pattern 2
-
-m02 = Dictionary();
-m02.put(\pitches, [1,3,4,3]);
-//Acciaccatura to an eighth note rendered as 1/64 note (1/16 of a beat):
-m02.put(\durs, [0.0625, 0.9375, 0.5, 1]);
-
-
-// Pattern 3
-m03 = Dictionary();
-m03.put(\pitches, [Rest(),3,4,3]);   // pattern starts with a rest
-m03.put(\durs, [0.5, 0.5 , 0.5, 0.5]);
-
+    melCells= [
+    //1-10
+    //Acciaccatura to a quarter note rendered as 1/32 note (1/8 of a beat):
+    Dictionary.newFrom([\pitches, [1,3,1,3,1,3],\durs, [0.125, 0.875, 0.125, 0.875, 0.125, 0.875]]),
+    //Acciaccatura to an eighth note rendered as 1/64 note (1/16 of a beat):
+    Dictionary.newFrom([\pitches, [1,3,4,3],\durs, [0.0625, 0.9375, 0.5, 1]]),
+    Dictionary.newFrom([\pitches, [Rest(),3,4,3],\durs, [0.5, 0.5 , 0.5, 0.5,0.5]]),   // pattern starts with a rest
+    Dictionary.newFrom([\pitches,[Rest(),3,4,5],\durs,[0.5,0.5,0.5,]]),
+    Dictionary.newFrom([\pitches,[3,4,5,Rest()],\durs,[0.5,0.5,0.5,0.5]]),
+    Dictionary.newFrom([\pitches,[8,8],\durs,[4,4]]),
+        Dictionary.newFrom([\pitches,[Rest(),Rest(),Rest(),Rest(),1,1,1,Rest(),Rest(),Rest(),Rest(),Rest],\durs,[1,1,1,0.5,0.5,0.5,0.5,0.5,1,1,1,1]]),
+    Dictionary.newFrom([\pitches,[5,4,4],\durs,[4,4,4]]),
+Dictionary.newFrom([\pitches,[7,5,Rest(),Rest(),Rest(),Rest()],\durs,[0.25,0.25,0.5,1,1,1]]),
+Dictionary.newFrom([\pitches,[7,5],\durs,[0.25,0.25]])
+    ];
+    //11-20
+    // m11=Dictionary.newFrom([\pitches,[]],\drus,[]);
+    // m12=Dictionary.newFrom([\pitches,[]],\drus,[]);
+    // m13=Dictionary.newFrom([\pitches,[]],\drus,[]);
+    // m14=Dictionary.newFrom([\pitches,[]],\drus,[]);
+    // m15=Dictionary.newFrom([\pitches,[]],\drus,[]);
+    // m16=Dictionary.newFrom([\pitches,[]],\drus,[]);
+    // m17=Dictionary.newFrom([\pitches,[]],\drus,[]);
+    // m18=Dictionary.newFrom([\pitches,[]],\drus,[]);
+    // m19=Dictionary.newFrom([\pitches,[]],\drus,[]);
+    // m20=Dictionary.newFrom([\pitches,[]],\drus,[]);
+    // m21=Dictionary.newFrom([\pitches,[]],\drus,[]);
+    // m22=Dictionary.newFrom([\pitches,[]],\drus,[]);
+    // m23=Dictionary.newFrom([\pitches,[]],\drus,[]);
+    // m24=Dictionary.newFrom([\pitches,[]],\drus,[]);
+    // m25=Dictionary.newFrom([\pitches,[]],\drus,[]);
+    // m26=Dictionary.newFrom([\pitches,[]],\drus,[]);
+    // m27=Dictionary.newFrom([\pitches,[]],\drus,[]);
+    // m28=Dictionary.newFrom([\pitches,[]],\drus,[]);
+    // m29=Dictionary.newFrom([\pitches,[]],\drus,[]);
+    // m30=Dictionary.newFrom([\pitches,[]],\drus,[]);
+    // m31=Dictionary.newFrom([\pitches,[]],\drus,[]);
+    // m32=Dictionary.newFrom([\pitches,[]],\drus,[]);
+    // m33=Dictionary.newFrom([\pitches,[]],\drus,[]);
+    // m34=Dictionary.newFrom([\pitches,[]],\drus,[]);
+    // m35=Dictionary.newFrom([\pitches,[]],\drus,[]);
+    // m36=Dictionary.newFrom([\pitches,[]],\drus,[]);
+    // m37=Dictionary.newFrom([\pitches,[]],\drus,[]);
+    // m38=Dictionary.newFrom([\pitches,[]],\drus,[]);
+    // m39=Dictionary.newFrom([\pitches,[]],\drus,[]);
+    // m40=Dictionary.newFrom([\pitches,[]],\drus,[]);
+    // m41=Dictionary.newFrom([\pitches,[]],\drus,[]);
+    // m42=Dictionary.newFrom([\pitches,[]],\drus,[]);
+    // m43=Dictionary.newFrom([\pitches,[]],\drus,[]);
+    // m44=Dictionary.newFrom([\pitches,[]],\drus,[]);
+    // m45=Dictionary.newFrom([\pitches,[]],\drus,[]);
+    // m46=Dictionary.newFrom([\pitches,[]],\drus,[]);
+    // m47=Dictionary.newFrom([\pitches,[]],\drus,[]);
+    // m48=Dictionary.newFrom([\pitches,[]],\drus,[]);
+    // m49=Dictionary.newFrom([\pitches,[]],\drus,[]);
+    // m50=Dictionary.newFrom([\pitches,[]],\drus,[]);
+    // m51=Dictionary.newFrom([\pitches,[]],\drus,[]);
+    // m52=Dictionary.newFrom([\pitches,[]],\drus,[]);
+    // m53=Dictionary.newFrom([\pitches,[]],\drus,[]);
+    // ]
 // Vector with all melodic patterns
-melCells.postln;
-melCells = [m01,m02,m03];
+    // melCells = [m01,m02,m03];
 }
 )
 //testing
 (
 a = ~createMelPatterns.value;
-a.inspect;
+a.do({|item i| [i+1, "-> ",item[\pitches].size,item[\durs].size,item[\pitches],item[\durs]].postln;});
 )
 /***********************************************
 *** 1-B Setting up a performance's parameters  *
