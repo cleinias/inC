@@ -10,10 +10,11 @@ A SuperCollider rendition of Terry Riley's In C that follows Riley's score instr
     performer having the freedom to determine how many times
     he or she will repeat each pattern before moving on to the next.
 3.  To keep the performance between 45 min and an hour eache pattern
-    should be repeated between 45 seconds and a minute and a half or longer
+    should be repeated between 45 seconds and a minute and a half (45''-90'')
+    or longer.
 4.  A group of about 35 instrumentalists is desired but smaller
     or larger groups can work too.
-5.  Any instrument can play
+5.  Any instrument can play.
 6.  Each pattern can be played in unison or canonically
     in any alignment with itself or with its neighboring patterns.
 7.  As the performance progresses, performers should stay
@@ -24,7 +25,7 @@ A SuperCollider rendition of Terry Riley's In C that follows Riley's score instr
 9.  It is also possible to use improvised percussion in strict rhythm
     (drum set, cymbals, bells, etc.), if it is carefully done
     and  doesn’t overpower the ensemble.
-10. Tempo is left to the discretion of the performers, not too slow
+10. Tempo is left to the discretion of the performers, not too slow.
 11. It is OK to transpose patterns by an octave, especially to transpose up.
 12. Transposing down by octaves works best on the patterns
     containing notes of long durations.
@@ -95,29 +96,30 @@ Refactoring will translate the above to classes, of course.
     melCells= [
     //1-10
     //Acciaccatura to a quarter note rendered as 1/32 note (1/8 of a beat):
-    Dictionary.newFrom([\pitches, [1,3,1,3,1,3],\durs, [0.125, 0.875, 0.125, 0.875, 0.125, 0.875]]),
+    Dictionary.newFrom([\pitches, [0,2,0,2,0,2],\durs, [0.125, 0.875, 0.125, 0.875, 0.125, 0.875]]),
     //Acciaccatura to an eighth note rendered as 1/64 note (1/16 of a beat):
-    Dictionary.newFrom([\pitches, [1,3,4,3],\durs, [0.0625, 0.9375, 0.5, 1]]),
-    Dictionary.newFrom([\pitches, [Rest(),3,4,3],\durs, [0.5, 0.5 , 0.5, 0.5,0.5]]),   // pattern starts with a rest
-    Dictionary.newFrom([\pitches,[Rest(),3,4,5],\durs,[0.5,0.5,0.5,]]),
-    Dictionary.newFrom([\pitches,[3,4,5,Rest()],\durs,[0.5,0.5,0.5,0.5]]),
-    Dictionary.newFrom([\pitches,[8,8],\durs,[4,4]]),
-        Dictionary.newFrom([\pitches,[Rest(),Rest(),Rest(),Rest(),1,1,1,Rest(),Rest(),Rest(),Rest(),Rest],\durs,[1,1,1,0.5,0.5,0.5,0.5,0.5,1,1,1,1]]),
-    Dictionary.newFrom([\pitches,[5,4,4],\durs,[4,4,4]]),
-Dictionary.newFrom([\pitches,[7,5,Rest(),Rest(),Rest(),Rest()],\durs,[0.25,0.25,0.5,1,1,1]]),
-Dictionary.newFrom([\pitches,[7,5],\durs,[0.25,0.25]])
+    Dictionary.newFrom([\pitches, [0,2,3,2],\durs, [0.0625, 0.9375, 0.5, 1]]),
+    Dictionary.newFrom([\pitches, [Rest(),2,3,2],\durs, [0.5, 0.5 , 0.5, 0.5,0.5]]),   // pattern starts with a rest
+    Dictionary.newFrom([\pitches,[Rest(),2,3,4],\durs,[0.5,0.5,0.5,]]),
+    Dictionary.newFrom([\pitches,[2,3,4,Rest()],\durs,[0.5,0.5,0.5,0.5]]),
+    Dictionary.newFrom([\pitches,[7],\durs,[8]),
+    Dictionary.newFrom([\pitches,[Rest(),Rest(),Rest(),Rest(),0,0,0,Rest(),Rest(),Rest(),Rest(),Rest],\durs,[1,1,1,0.5,0.25,0.25,0.5,0.5,1,1,1,1]]),
+    Dictionary.newFrom([\pitches,[4,3],\durs,[6,8]]),
+Dictionary.newFrom([\pitches,[6,4,Rest(),Rest(),Rest(),Rest()],\durs,[0.25,0.25,0.5,1,1,1]]),
+Dictionary.newFrom([\pitches,[6,4],\durs,[0.25,0.25]])
     ];
-    //11-20
-    // m11=Dictionary.newFrom([\pitches,[]],\drus,[]);
-    // m12=Dictionary.newFrom([\pitches,[]],\drus,[]);
-    // m13=Dictionary.newFrom([\pitches,[]],\drus,[]);
-    // m14=Dictionary.newFrom([\pitches,[]],\drus,[]);
-    // m15=Dictionary.newFrom([\pitches,[]],\drus,[]);
-    // m16=Dictionary.newFrom([\pitches,[]],\drus,[]);
-    // m17=Dictionary.newFrom([\pitches,[]],\drus,[]);
-    // m18=Dictionary.newFrom([\pitches,[]],\drus,[]);
-    // m19=Dictionary.newFrom([\pitches,[]],\drus,[]);
-    // m20=Dictionary.newFrom([\pitches,[]],\drus,[]);
+    // 11-20
+    m11=Dictionary.newFrom([\pitches,[4,5,7,5,],\drus,[]);
+    m12=Dictionary.newFrom([\pitches,[],\drus,[]);
+    m13=Dictionary.newFrom([\pitches,[],\drus,[]);
+    m14=Dictionary.newFrom([\pitches,[],\drus,[]);
+    m15=Dictionary.newFrom([\pitches,[],\drus,[]);
+    m16=Dictionary.newFrom([\pitches,[],\drus,[]);
+    m17=Dictionary.newFrom([\pitches,[],\drus,[]);
+    m18=Dictionary.newFrom([\pitches,[],\drus,[]);
+    m19=Dictionary.newFrom([\pitches,[],\drus,[]);
+    m20=Dictionary.newFrom([\pitches,[],\drus,[]);
+    // 21-30
     // m21=Dictionary.newFrom([\pitches,[]],\drus,[]);
     // m22=Dictionary.newFrom([\pitches,[]],\drus,[]);
     // m23=Dictionary.newFrom([\pitches,[]],\drus,[]);
