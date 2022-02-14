@@ -62,18 +62,19 @@ All data and algorithms of In C are contained in three main objects:
 
 In this first test, the three main objects are represented by environment variables:
 
-   -- ~melPatterns
+    - ~melPatterns
     - ~performance
     - ~player
 
-Refactoring to proper classes will happen later. Performance is the main object. It has:
+Refactoring to classes will happen later.
+Performance is the main object. It has:
 
  - an instance of melodic patterns (melPatterns)
  - a set of performance parameters
  - a collection of players instantiated on the basis of the performance parameters
  - an actual score generated on the basis of performance parameters (possibly. See notes on payesr below)
 
-Refactoring will translate the above to classes, of course.
+Refactoring will translate the above to classes.
 */
 
 
@@ -81,11 +82,14 @@ Refactoring will translate the above to classes, of course.
 *** 1-A creating the patterns *
 *******************************
 
-- Patterns are coded as a dictionary of two vectors, containing, respectively, pitches and durations (we are using dictionary to leave open the possibility to add more features later)
-- The pattern dictionaries are then stored in a vector containing all the melodic patterns (melCells)
-- Pitches are specified in degrees
-- Durations are indicated in fraction of a beat
-*/  z=Dictionary.newFR
+- Patterns are coded as a dictionary of two vectors, containing,
+  respectively,pitches and durations
+  (we are using dictionary to leave open the possibility of adding more features later)
+- The pattern dictionaries are then stored in a vector containing all the melodic patterns (~melCells)
+- Pitches are specified in degrees and expressed in integers
+  (with a caveat: if 0 is C4, and 1 is D4, C# is 0.1, not 0.5, and Db is 0.9. See the Literals doc page for details)
+- Durations are indicated in fractions of a beat
+*/
 
 (
 ~createMelPatterns = {
