@@ -56,9 +56,6 @@ The project is planned to proceed through several stages of increasing complexit
 7. Phase 7 - Add minimal GUI to control performance at run time
 
 
-
-
-
 ## 0 - General setup
 
 
