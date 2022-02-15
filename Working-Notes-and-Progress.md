@@ -9,7 +9,7 @@
 |-----------------------------------------------------------------------|----------|
 
 1. Write general program structure as functions                          DONE
-2. Write patterns-generating function                                    DONE
+2. Write patterns-generating function                                    DONE (with all 53 patterns)
 3. Write performance generating function:
       - General setup                                                    DONE
       - Create individual *randomized* scores for player                 DONE //but as a beforehand computation
@@ -22,6 +22,7 @@
       - As simple as possible with internal default PBind instrument     DONE
       - Slightly more complex with different internal instruments
       - With MIDI out to synth (possibly Carla-hosted Kontakt)
+        Check out Linux Utility Quark to easy connection job to Carla
       - With MIDI out to Ardour (controlled from Ardour)
 
 
@@ -29,7 +30,7 @@
 
 
 ### Phase 3 - Add complete scores and full instrument set
-
+    Complete score added already in phase 1
 
 
 ### Phase 4 - Add Riley's additional (and not so additional) options:
@@ -38,10 +39,11 @@
 - Ending with repeat crescendo and diminuendo and instruments' randomly dropping off
 
 
-### Phase 5 - Explore live performance interaction with algorithm
+### Phase 5 - Add some spatialization
 
+### Phase 6 - Explore live performance interaction with algorithm
 
-### Phase 6 - Add minimal GUI to control performance at run time
+### Phase 7 - Add minimal GUI to control performance at run time
 
 
 
@@ -49,7 +51,7 @@
 
 ### To create a random number of pattern repetitions:
 
-- Still unclear
+- Done with beforehand computation, need to improve for computation on the spot (as the pattern is played)
 
 
 ### Instruments and PBind
@@ -58,7 +60,7 @@
 Pbind's 'play' method creates an event and plays according to an event prototype:
 
 - using a default SynthDef, and
-- passing to the SynthDef all the *indentically named* _patterns_ passed to the PBind itself (but see caveats in docs)
+- passing to the SynthDef all the *indentically named* _keys_ passed to the PBind itself (but see caveats in docs)
 - to change instruments, you define an appropriate SynthDef and then pass its symbol to the PBind with the `\instrument` key.
 
 Example from the docs:

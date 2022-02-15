@@ -1,11 +1,11 @@
 /********************************************************************************************************************
-               In C - Phase one implementation, a niminal working example
+               In C - Phase one implementation, a mininal working prototype
 *********************************************************************************************************************/
 
 
 /* A minimal test with:
 - all 53 melodic patterns
-- 2 instruments
+- 5 instruments
 - no transposition
 */
 
@@ -23,11 +23,12 @@
     Dictionary.newFrom([\pitches, [0,2,0,2,0,2],\durs, [0.125, 0.875, 0.125, 0.875, 0.125, 0.875]]),
     //Acciaccatura to an eighth note rendered as 1/64 note (1/16 of a beat):
     Dictionary.newFrom([\pitches, [0,2,3,2],\durs, [0.0625, 0.9375, 0.5, 1]]),
-    Dictionary.newFrom([\pitches, [Rest(),2,3,2],\durs, [0.5, 0.5 , 0.5, 0.5,0.5]]),
-    Dictionary.newFrom([\pitches,[Rest(),2,3,4],\durs,[0.5,0.5,0.5,]]),
+    Dictionary.newFrom([\pitches, [Rest(),2,3,2],\durs, [0.5, 0.5, 0.5,0.5]]),
+    Dictionary.newFrom([\pitches,[Rest(),2,3,4],\durs,[0.5,0.5,0.5,0.5]]),
     Dictionary.newFrom([\pitches,[2,3,4,Rest()],\durs,[0.5,0.5,0.5,0.5]]),
     Dictionary.newFrom([\pitches,[7],\durs,[8]]),
-    Dictionary.newFrom([\pitches,[Rest(),Rest(),Rest(),Rest(),0,0,0,Rest(),Rest(),Rest(),Rest(),Rest],\durs, [1,1,1,0.5,0.25,0.25,0.5,0.5,1,1,1,1]]),
+    Dictionary.newFrom([\pitches,[Rest(),Rest(),Rest(),Rest(),0,0,0,Rest(),Rest(),Rest(),Rest(),Rest],
+                        \durs, [1,1,1,0.5,0.25,0.25,0.5,0.5,1,1,1,1]]),
     Dictionary.newFrom([\pitches,[4,3],\durs,[6,8]]),
     Dictionary.newFrom([\pitches,[6,4,Rest(),Rest(),Rest(),Rest()],\durs,[0.25,0.25,0.5,1,1,1]]),
     Dictionary.newFrom([\pitches,[6,4],\durs,[0.25,0.25]]),
@@ -43,44 +44,50 @@
    Dictionary.newFrom([\pitches,[Rest(),11],\durs,[1.5,1.5]]),
    Dictionary.newFrom([\pitches,[2,3.1,2,3,-3,2,3,2,3,2],\durs,[0.25, 0.25, 0.25, 0.25, 0.75,0.25, 0.25, 0.25, 0.25, 0.25]]),
  // 21-30
-   Dictionary.newFrom([\pitches,[3.5],\durs,[3]])];
-    // m22=Dictionary.newFrom([\pitches,[],\durs,[]]);
-    // m23=Dictionary.newFrom([\pitches,[],\durs,[]]);
-    // m24=Dictionary.newFrom([\pitches,[],\durs,[]]);
-    // m25=Dictionary.newFrom([\pitches,[],\durs,[]]);
-    // m26=Dictionary.newFrom([\pitches,[],\durs,[]]);
-    // m27=Dictionary.newFrom([\pitches,[],\durs,[]]);
-    // m28=Dictionary.newFrom([\pitches,[],\durs,[]]);
-    // m29=Dictionary.newFrom([\pitches,[],\durs,[]]);
-    // m30=Dictionary.newFrom([\pitches,[],\durs,[]]);
-    // m31=Dictionary.newFrom([\pitches,[],\durs,[]]);
-    // m32=Dictionary.newFrom([\pitches,[],\durs,[]]);
-    // m33=Dictionary.newFrom([\pitches,[],\durs,[]]);
-    // m34=Dictionary.newFrom([\pitches,[],\durs,[]]);
-    // m35=Dictionary.newFrom([\pitches,[],\durs,[]]);
-    // m36=Dictionary.newFrom([\pitches,[],\durs,[]]);
-    // m37=Dictionary.newFrom([\pitches,[],\durs,[]]);
-    // m38=Dictionary.newFrom([\pitches,[],\durs,[]]);
-    // m39=Dictionary.newFrom([\pitches,[],\durs,[]]);
-    // m40=Dictionary.newFrom([\pitches,[],\durs,[]]);
-    // m41=Dictionary.newFrom([\pitches,[],\durs,[]]);
-    // m42=Dictionary.newFrom([\pitches,[],\durs,[]]);
-    // m43=Dictionary.newFrom([\pitches,[],\durs,[]]);
-    // m44=Dictionary.newFrom([\pitches,[],\durs,[]]);
-    // m45=Dictionary.newFrom([\pitches,[],\durs,[]]);
-    // m46=Dictionary.newFrom([\pitches,[],\durs,[]]);
-    // m47=Dictionary.newFrom([\pitches,[],\durs,[]]);
-    // m48=Dictionary.newFrom([\pitches,[],\durs,[]]);
-    // m49=Dictionary.newFrom([\pitches,[],\durs,[]]);
-    // m50=Dictionary.newFrom([\pitches,[],\durs,[]]);
-    // m51=Dictionary.newFrom([\pitches,[],\durs,[]]);
-    // m52=Dictionary.newFrom([\pitches,[],\durs,[]]);
-    // m53=Dictionary.newFrom([\pitches,[],\durs,[]]);
-    // ]
-}
+   Dictionary.newFrom([\pitches,[3.5],\durs,[3]]),
+   Dictionary.newFrom([\pitches,[2, 2, 2, 2, 2, 3.1, 4, 5, 6],\durs,[1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,0.5]]),
+   Dictionary.newFrom([\pitches,[2, 3.1, 3.1,3.1,3.1,3.1,4,5,6],\durs,[0.5,1.5,1.5,1.5,1.5,1.5,1.5, 1.5,1]]),
+   Dictionary.newFrom([\pitches,[2,3.1,4,4,4,4,4,5,6],\durs,[0.5,0.5, 1.5,1.5,1.5,1.5,1.5,1.5,0.5]]),
+   Dictionary.newFrom([\pitches,[2, 3.1, 4, 5, 5, 5, 5, 5 ,6],\durs,[0.5,0.5,0.5,1.5,1.5,1.5,1.5,1.5,1.5]]),
+   Dictionary.newFrom([\pitches,[2, 3.1,4,5, 6, 6, 6, 6, 6 ],\durs,[0.5,0.5,0.5,0.5,1.5,1.5,1.5,1.5,1.5]]),
+   Dictionary.newFrom([\pitches,[2,3.1,2,3.1,4,2,4,3.1,2,3.1,2],\durs,[0.25, 0.25,0.25,0.25, 0.5, 0.25, 0.25,0.25,0.25,0.25,0.25]]),
+   Dictionary.newFrom([\pitches,[2,3.1, 2,3.1,2,2,],\durs,[0.25, 0.25, 0.25, 0.25, 0.75,0.25]]),
+   Dictionary.newFrom([\pitches,[2,4,7],\durs,[3,3,3]]),
+   Dictionary.newFrom([\pitches,[7],\durs,[3]]),
+ // 31-40
+   Dictionary.newFrom([\pitches,[4,3,4, 6,4,6],\durs,[0.25, 0.25, 0.25, 0.25, 0.25, 0.25]]),
+   Dictionary.newFrom([\pitches,[3,4,3,4,6,3,4],\durs,[0.25, 0.25, 0.25, 0.25, 0.25,  3.25,1.5]]),
+   Dictionary.newFrom([\pitches,[4, 3, Rest()],\durs,[0.25, 0.25, 0.5]]),
+   Dictionary.newFrom([\pitches,[4, 3],\durs,[0.25, 0.25]]),
+   Dictionary.newFrom([\pitches,[3, 4, 6, 4,6,4,6,4, 6, 4, Rest(), Rest(), Rest(), Rest(),
+                                 6b, 11, 12, 11,  13, 12,11, 9,11, 10.1, Rest(),  Rest(), Rest(),  10, 11],
+                        \durs,  [0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.5, 1, 1, 1,
+                                  1, 3, 0.5, 1, 0.5, 1.5, 0.5, 3, 0.5, 3.5, 1, 1, 0.5, 3.5, 3 ]]),
+   Dictionary.newFrom([\pitches,[3, 4, 6, 4, 6, 4],\durs,[0.25, 0.25, 0.25, 0.25, 0.25, 0.25]]),
+   Dictionary.newFrom([\pitches,[3, 4],\durs,[0.25, 0.25]]),
+   Dictionary.newFrom([\pitches,[3, 4, 6],\durs,[0.25, 0.25, 0.25]]),
+   Dictionary.newFrom([\pitches,[6, 4, 3, 4, 6, 7],\durs,[0.25, 0.25, 0.25, 0.25, 0.25, 0.25]]),
+   Dictionary.newFrom([\pitches,[6, 3],\durs,[0.25, 0.25]]),
+ // 41-50
+   Dictionary.newFrom([\pitches,[6, 4],\durs,[0.25, 0.25]]),
+   Dictionary.newFrom([\pitches,[7, 6, 5, 7],\durs,[4, 4, 4, 4]]),
+   Dictionary.newFrom([\pitches,[10, 9, 10, 9, 9, 9, 9, 10, 9],\durs,[0.25, 0.25, 0.25, 0.25, 0.5, 0.5, 0.5, 0.25, 0.25]]),
+   Dictionary.newFrom([\pitches,[10, 9, 9, 7],\durs,[0.5, 1, 0.5, 1]]),
+   Dictionary.newFrom([\pitches,[8, 8, 4],\durs,[1, 1, 1]]),
+   Dictionary.newFrom([\pitches,[4, 8, 9, 8, Rest(), 4, Rest(), 4, Rest(), 4, 4, 8, 9, 8],
+                        \durs,[0.25, 0.25, 0.25, 0.25, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.25, 0.25, 0.25, 0.25, ]]),
+   Dictionary.newFrom([\pitches,[8,9,8],\durs,[0.25, 0.25, 0.5]]),
+   Dictionary.newFrom([\pitches,[4, 4, 3],\durs,[6, 4, 5]]),
+   Dictionary.newFrom([\pitches,[3, 4, 6b, 4, 6b, 4],\durs,[0.25, 0.25, 0.25, 0.25, 0.25, 0.25]]),
+   Dictionary.newFrom([\pitches,[3, 4],\durs,[0.25, 0.25]]),
+ //51-53
+   Dictionary.newFrom([\pitches,[3, 4, 6b],\durs,[0.25, 0.25, 0.25]]),
+   Dictionary.newFrom([\pitches,[4, 6b],\durs,[0.25, 0.25]]),
+   Dictionary.newFrom([\pitches,[6b, 4],\durs,[0.25, 0.25]])];
+    }
 )
 
-(//testing:
+(//Testing:
 // - all patterns should have equal number of pitches and durations
 // - there shoud be 53 patterns
 // - total duration should be equal to
@@ -89,7 +96,7 @@ a = ~createMelPatterns.value;
 a.do({|item i| [i+1, "-> ",item[\pitches].size,item[\durs].size,'total beats-->',item[\durs].sum,item[\pitches],item[\durs]].postln;});
 )
 
-(// Testing:
+(// Auditory testing:
  //Play each pattern once, wait a second in between
 ~testMelPatterns = {
 	| patterns tempo |
@@ -102,7 +109,8 @@ a.do({|item i| [i+1, "-> ",item[\pitches].size,item[\durs].size,'total beats-->'
 			2.wait;})
 	    }.fork(TempoClock(tempo/60));
 	};
-~testMelPatterns.value(~createMelPatterns.value,60);
+a = ~testMelPatterns.value(~createMelPatterns.value,60);
+a.stop;
 )
 
 /***********************************************
