@@ -96,7 +96,7 @@ The performance is executed by compiling all the functions in inC-1.scd and then
 ```
 // playersNum:  --> desired numebr of instrumetns (will be created randomly)
 // performLength: --> desired length in minutes
-// patternsFunction: --> the function generating the patterns (only ~createMelPatterns is provided in thhe prototype)
+// patternsFunction: --> the function generating the patterns (only ~createMelPatterns is provided in the prototype)
 ```
 
 p=~createPerformance.value(playersNum: anInteger, performLength:aFloat, patternsFunction:~createMelPatterns);
