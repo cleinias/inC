@@ -49,6 +49,16 @@
 
 ## B -  Scattered notes
 
+### How to play a sampled instrument?
+
+One (rather low-level) possibility: use BufFiles quarks extension: "An easy way to load a bunch of audio files into easily accessible collections of buffers in Supercollider. Great for sample libraries. This class loads the sound files at the root of a folder into the array, ignoring any subfolders." See help file for details.
+
+Another possibility is to use the SuperSampler quarks, which is way more sophisticated (and also, consequently, harder to use and easier to break things with...)
+
+### More on instruments:
+Checkout the SynthDefs listed on the resource page curated by Mads Kjeldgaard: https://github.com/cleinias/awesome-supercollider#synthdefs
+Among the many Synths listed there there are some simple ones like piano, harpsichord, strings, etc.
+
 ### To create a random number of pattern repetitions:
 
 - Done with beforehand computation, need to improve for computation on the spot (as the pattern is played)
