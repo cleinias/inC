@@ -1,11 +1,11 @@
 /********************************************************************************************************************
-               In C - Phase one implementation, a mininal working prototype
+               In C - Phase one implementation, a minimal working prototype
 *********************************************************************************************************************/
 
 
 /* A minimal test with:
 - all 53 melodic patterns
-- 5 instruments
+- 5 indentical instruments
 - no transposition
 */
 
@@ -126,33 +126,41 @@ a.stop;
   // Return a dictionary with tempo, payersNum, performLength, basicScore, and an array of players
   //
   // Parameters
-  // - playersNum (self-explanatory)
+  // - instruments:  an Array of SynthDef that will be used by the players.
   // - length in minutes (Riley's instructions say 45 to 90', but we default to 5)
   // - tempo (In standard bpm. Riley is rather vague about tempo)
   // - patternsFunction is a function that creates the vector of melodic cells.
         It the only parameters that does not have a default and must always be passed.
         It will eventually be replaced with a proper method to the MelodicCells class
   */
-    |playersNum = 2 , performLength = 5, tempo = 120, patternsFunction |
+    |instruments, performLength = 5, tempo = 120, patternsFunction |
     var performance = Dictionary.new, players = Array.new;
     //patternsFunction.postln;
     if (patternsFunction.isNil, {"Error: Performance needs a vector of melody cells to be instantiated".postln});
 
+    //an empty players argument picks the default instruments (kind and kind as per called function)
+    if (instruments.isNil,
+        {instruments = ~defaultInstruments.value()});
+
     performance[\tempo]=tempo;
-    performance[\playersNum]=playersNum;
+    performance[\playersNum]=players.size;
     performance[\performLength]=performLength;
     performance[\basicScore]=patternsFunction.value;
-    //get an array of players with individualized scores
-    performance[\players]=playersNum.collect{
+
+    //get an array of players with individualized scores and instruments
+    performance[\players]=instruments.collect{
         |item i|
-        ~createPlayerScoreInAdvance.value(performance[\basicScore], performLength, tempo, nil)};
+        var score;
+        score = ~createPlayerScoreInAdvance.value(performance[\basicScore], performLength, tempo, nil);
+        score[\instrument]=item;
+    };
     //return the performance object
     performance;
 }
 )
 //testing
 (
-p=~createPerformance.value(playersNum: 5, performLength:5, patternsFunction:~createMelPatterns);
+p=~createPerformance.value(performLength:5, patternsFunction:~createMelPatterns);
 p[\players].size.postln;
 p[\players].do({|item i|item[\score][\pitches].size.postln});
 //p.inspect
@@ -183,7 +191,7 @@ A player must:
    Option b is more interesting and leave open the possibility of inserting (later)
    some interaction with the performance during execution, but it is also more complex.
 
-- There also different options on the actual instruments.
+- There are also different options on the actual instruments.
 
 I will start with the simpler (a) options first.
 */
@@ -251,6 +259,20 @@ p.postln;
     };
 )
 
+(~defaultInstruments={
+    |instr=5|
+    // Return an array of identical default SynthDefs, defaults to 5
+
+    var synth, instruments;
+    synth = SynthDef(\basic_mdapiano, { |out=0, freq=440, gate=1|
+        var son = MdaPiano.ar(freq, gate, release: 0.9, stereo: 0.3, sustain: 0);
+        DetectSilence.ar(son, 0.01, doneAction:2);
+        Out.ar(out, son * 0.1);
+    }).add;
+    instruments = synth.dup(instr);
+    }
+)
+
 
 (
 //testing player creation
@@ -269,10 +291,11 @@ b[\score][\durs].size.postln;
 
 // 1-C-1 Setup
 // 1-C-11 General setup if needed (SynthDef definition, Midi connections, etc)
-// 1-C-12 Create the performance (with playersNum = 2 , performLength = 5, tempo = 120, patternsFunction )
+// 1-C-12 Create the performance (with 0 instruments, will default to 5, performLength = 5, tempo = 120, patternsFunction )
    ~perf = p=~createPerformance.value(patternsFunction:~createMelPatterns);
 
 // 1-C-2 Execute the performance
+(
 ~executePerformance = {
     /*
     Create Pbind patterns from the info about the players contained in the performance object
@@ -285,11 +308,11 @@ b[\score][\durs].size.postln;
         });
     Ppar(pbins).play;
 };
-
+)
 //testing
 
 (
-p=~createPerformance.value(playersNum: 5, performLength:0.15, patternsFunction:~createMelPatterns);
+p=~createPerformance.value(performLength:5, tempo: 120, patternsFunction:~createMelPatterns);
 q=~executePerformance.value(p);
 // t= Ppar(q).play;
 //p[\players].size.postln;
@@ -298,7 +321,7 @@ q=~executePerformance.value(p);
 )
 q.stop
 // 1-C-3 Cleanup afterwards
-
+// Need to free al the SynthDefs?
 
 /************************************************
 *** 1-D  Helper functions and code snippets     *
