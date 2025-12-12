@@ -1,6 +1,5 @@
 \version "2.22.1"
 % automatically converted by musicxml2ly from /home/stefano/Desktop/Firefox Downloads/In_C_Ut.mxl
-%\pointAndClickOff
 
 \include "articulate.ly"
 
@@ -10,9 +9,7 @@
 
 \header {
   title =  "In C "
-  composer =  "(Terry Riley)"
-  encodingsoftware =  "MuseScore 3.3.4"
-  encodingdate =  "2019-12-15"
+  composer =  "Terry Riley"
 }
 
 #(set-global-staff-size 17.142857142857146)
