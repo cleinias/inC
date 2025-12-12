@@ -1,7 +1,7 @@
 ##  In C
 
 ### Project description
-A SuperCollider rendition of Terry Riley's In C that follows Riley's score instructions as closely as possible
+A SuperCollider rendition of Terry Riley's _In C_ that follows Riley's score instructions as closely as possible
 
 This is a self-education project aimed at improving my familiarity with classic minimalism
 and with SuperCollider (and especially its pattern language).
@@ -14,7 +14,7 @@ A few iterations are planned. Phase 1 is a minimal working prototype, successive
 2.  Patterns are to be played consecutively with each
     performer having the freedom to determine how many times
     he or she will repeat each pattern before moving on to the next.
-3.  To keep the performance between 45 min and an hour eache pattern
+3.  To keep the performance between 45 min and an hour each pattern
     should be repeated between 45 seconds and a minute and a half (45''-90'')
     or longer.
 4.  A group of about 35 instrumentalists is desired but smaller
@@ -44,7 +44,7 @@ A few iterations are planned. Phase 1 is a minimal working prototype, successive
 ## Phases
 The project is planned to proceed through several stages of increasing complexity, provisionally summarized as follows (see below for further details on the single phases):
 
-1. Phase 1: Minimal working prototype:
+1. Phase 1: Minimal working prototype
 2. Phase 2 - Refactor into classes
 3. Phase 3 - Add complete scores and full instrument set
 4. Phase 4 - Add Riley's additional (and not so additional) options:
@@ -59,15 +59,15 @@ The project is planned to proceed through several stages of increasing complexit
 ## 0 - General setup
 
 
-All data and algorithms of In C are contained in three main objects:
+All data and algorithms of *In C* are contained within three main objects:
 
-- MelodicPatterns
+- *MelodicPatterns*
   The repository of melody cells
 
-- Performance
+- *Performance*
   Contains parameters about number of players, duration, and tempo (for now)
 
-- Players
+- *Players*
   Data about the players, including their scores and instruments
 
 
@@ -94,14 +94,13 @@ Performance is the main object. It has:
 The performance is executed by compiling all the functions in inC-1.scd and then evaluating the following:
 
 ```
-// playersNum:  --> desired numebr of instrumetns (will be created randomly)
+// players:  --> collection of desired instruments (will be created randomly if none provided)
 // performLength: --> desired length in minutes
 // patternsFunction: --> the function generating the patterns (only ~createMelPatterns is provided in the prototype)
-```
 
-p=~createPerformance.value(playersNum: anInteger, performLength:aFloat, patternsFunction:~createMelPatterns);
+p=~createPerformance.value(players: aSynthDefArray, performLength:aFloat, patternsFunction:~createMelPatterns);
 q=~executePerformance.value(p);
-
+```
 performance is stopped in standard SuperCollider fashion with
 
 ```
