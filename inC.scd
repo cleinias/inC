@@ -5,16 +5,22 @@
 
 /* A minimal test with:
 - all 53 melodic patterns
-- 5 indentical instruments
+- 5 identical instruments
 - no transposition
 */
 
+/**************************************************
+*** 1-A Setting up the score and the instruments  *
+***************************************************/
 
 
 (
 ~createMelPatterns = {
 	// Create all the 53 melodic patterns in Riley's "In C"
 	// Return a vector of dictionaries, one per pattern
+
+    // Durations are expressed as fraction of a beat, or more precisely as a fraction of a quarter note.
+    // TODO: Conversion of durations from beats to millisecond must be carried out when the score is created
 
 	var melCells;
     melCells= [
@@ -113,6 +119,68 @@ a = ~testMelPatterns.value(~createMelPatterns.value,60);
 a.stop;
 )
 
+// Create a small collection of some common instruments
+// from the SCLOrk quark (Santa Clara Laptop Orchestra Quark)
+
+// TODO: Load a small collection of SCLOrk instruments onto the server,
+// put a reference into the following dictionary
+
+/
+
+// TODO: the instruments are not loaded into SynthDefs (in the newt to last line of the function)
+(
+~commonSclorkInstr = {
+     // Load a small selection of SCLOrk common instruments if not loaded already.
+     // Return a collection of synthDefs
+     var sclorkCommon, synthDefs;
+    // Check the SCLork quark is installed, install otherwise
+    if (Quarks.isInstalled("SCLOrkSynths"),
+        {"SCLorkSynths installed already".postln;},
+        {"Installing SCLOrkSynths...".postln;
+         Quarks.installQuark(SCLOrkSynths);
+         "SCLorkSynths installed".postln;});
+    // Choose a few instruments
+    sclorkCommon = [\cheapPiano1, \kalimba, \xylophone, \waveguideFlute, \pluck];  /// demo instrs with: SCLOrkSynths.gui
+    synthDefs = Array.new(sclorkCommon.size);
+    // Check if they are loaded, load them otherwise
+    sclorkCommon.do({
+        | item i |
+        if (SynthDescLib.global.synthDescs.at(item).isNil,
+            {"I should load -->".post; item.postln;
+             "xx".postln;
+             item.post;" loaded".postln;},
+            {item.post;" is loaded already".postln;}); // TODO: Here you load the instrument
+        synthDefs.add("??");  // TODO: here you pass the synthDef
+      });
+    // return a collection with the loaded instruments' SynthDefs
+    synthDefs;
+}
+)
+
+
+// testing: load instruments and play a C maj lydian scale on each one of them in turn
+(
+var scale = [0,1,2,3.1,4,5,6,7], instrs;
+instrs= ~commonSclorkInstr.value();
+instrs.inspect;
+instrs.do({
+    |item i|
+    "Now playing ".post; item.postln;
+    Pbind(\instr, item,
+          \degree, Pseq(scale,1),
+          \dur, 0.5).play;});
+)
+
+(
+    var scale = [0,1,2,3.1,4,5,6,7], pbinds=List.new,instrs;
+    instrs= ~commonSclorkInstr.value();
+    pbinds=instrs.collect({
+        | item i|
+         Pbind(\instr, item,
+          \degree, Pseq(scale,1),
+          \dur, 0.5).play;});
+    pbinds.do({|item i| item.play});
+)
 /***********************************************
 *** 1-B Setting up a performance's parameters  *
 ************************************************/
@@ -123,7 +191,7 @@ a.stop;
 ~createPerformance = {
   /* - Setup performance parameters: performance length, tempo, number of players, instruments
   // - Also setup environment (initialize Midi connections, setup midi ports, etc.)
-  // Return a dictionary with tempo, payersNum, performLength, basicScore, and an array of players
+  // Return a dictionary with tempo, playersNum, performLength, basicScore, and an array of players
   //
   // Parameters
   // - instruments:  an Array of SynthDef that will be used by the players.
@@ -225,9 +293,19 @@ p.postln;
        perfLength is desired performance length in minutes
        tempo is in bpm
        instrument is still to be decided, most likely a synthDef,
-                  unless the output is redirected to Ardour via MIDI
-                 (see docs: Using patterns for sending MIDI events, Pattern Guide Cookbook 4.
-                            It seems all it's needed is a midi port and a midi channel)*/
+                  unless the output is redirected to a MIDI capable player via MIDIout.
+                  Kontakt hosted on Carla works fine, but it needs to be initialized first,
+                  and then connected to the MIDIOut instance in Helvum or qpwgraph.
+                  Then each player must be assigned a different MIDI channel, corresponding
+                  to the instrument loaded into Kontakt. Notice however that MIDI connections
+                  may carry a maximum of 16 channels, which means a performance with more than 16
+                  instruments will require multiple Kontakt (or similar) instances.
+                  Notice also that the MIDI channel should be decided by the performance object
+                  by assigning a channel number from the available pool.
+                  Or, alternatively, by extracting channel numbers from a dictionary indexed
+                  by instrument (and which assumes a suitable arrangement on the Kontakt back-end).
+                  (see docs: Using patterns for sending MIDI events, Pattern Guide Cookbook 4.)
+                   */
 
     | melCells perfLength tempo instrument |
 
@@ -286,12 +364,12 @@ b[\score][\durs].size.postln;
 
 
 /*********************************
-*** 1-C Performing the score     *
+*** 1-D Performing the score     *
 **********************************/
 
-// 1-C-1 Setup
-// 1-C-11 General setup if needed (SynthDef definition, Midi connections, etc)
-// 1-C-12 Create the performance (with 0 instruments, will default to 5, performLength = 5, tempo = 120, patternsFunction )
+// 1-D-1 Setup
+// 1-D-11 General setup if needed (SynthDef definition, Midi connections, etc)
+// 1-D-12 Create the performance (with 0 instruments, will default to 5, performLength = 5, tempo = 120, patternsFunction )
    ~perf = p=~createPerformance.value(patternsFunction:~createMelPatterns);
 
 // 1-C-2 Execute the performance
@@ -301,18 +379,18 @@ b[\score][\durs].size.postln;
     Create Pbind patterns from the info about the players contained in the performance object
     */
     | performance |
-    var pbins=List.new;
-    pbins=performance[\players].collect({
+    var pbinds=List.new;
+    pbinds=performance[\players].collect({
         | item i|
         Pbind(\degree, Pseq(item[\score][\pitches]), \dur, Pseq(item[\score][\durs]));
         });
-    Ppar(pbins).play;
+    Ppar(pbinds).play;
 };
 )
 //testing
 
 (
-p=~createPerformance.value(performLength:5, tempo: 120, patternsFunction:~createMelPatterns);
+p=~createPerformance.value(performLength:35, tempo: 50, patternsFunction:~createMelPatterns);
 q=~executePerformance.value(p);
 // t= Ppar(q).play;
 //p[\players].size.postln;
@@ -324,7 +402,7 @@ q.stop
 // Need to free al the SynthDefs?
 
 /************************************************
-*** 1-D  Helper functions and code snippets     *
+*** 1-E  Helper functions and code snippets     *
 *************************************************/
 
 
