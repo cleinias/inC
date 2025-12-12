@@ -1,0 +1,93 @@
+#N canvas 1542 122 867 984 12;
+#X obj 67 555 makenote;
+#X obj 69 607 noteout 1;
+#X msg 42 484 60;
+#X obj 42 440 bng 20 250 50 0 empty empty empty 0 -10 0 12 #fffcfcfc
+#ff000000 #ff000000 1;
+#X text 150 553 Appoggiatura C;
+#X obj 281 557 makenote;
+#X obj 283 609 noteout 1;
+#X obj 253 447 bng 20 250 50 0 empty empty empty 0 -10 0 12 #fffcfcfc
+#ff000000 #ff000000 1;
+#X msg 255 486 64;
+#X msg 91 485 40, f 4;
+#X msg 143 483 125;
+#X msg 305 487 40, f 4;
+#X msg 357 485 475;
+#X text 364 555 quarter E;
+#X obj 42 117 tgl 20 0 empty empty empty 0 -10 0 12 #fffcfcfc #ff000000
+#ff000000 0 1 1;
+#X obj 42 227 bng 20 250 50 0 empty empty empty 0 -10 0 12 #fffcfcfc
+#ff000000 #ff000000 1;
+#X floatatom 42 360 5 0 0 0 - - - 0 0 1, f 5;
+#X obj 42 251 f;
+#X obj 42 297 + 1;
+#X msg 92 227 -1;
+#X obj 42 327 % 4;
+#X obj 323 447 bng 20 250 50 0 empty empty empty 0 -10 0 12 #fffcfcfc
+#ff000000 #ff000000 1;
+#X obj 288 447 bng 20 250 50 0 empty empty empty 0 -10 0 12 #fffcfcfc
+#ff000000 #ff000000 1;
+#X obj 42 407 sel 0 1, f 13;
+#X text 90 115 Switch;
+#X text 146 228 counter;
+#X floatatom 526 193 5 0 0 0 - - - 0 0 1, f 5;
+#X floatatom 550 60 5 0 0 0 - - - 0 0 1, f 5;
+#X text 571 33 bpm;
+#X obj 526 96 /;
+#X floatatom 555 124 5 0 0 0 - - - 0 0 1, f 5;
+#X floatatom 506 122 5 0 0 0 - - - 0 0 1, f 5;
+#X obj 526 158 /, f 4;
+#X obj 504 73 bng 20 250 50 0 empty empty empty 0 -10 0 12 #fffcfcfc
+#ff000000 #ff000000 1;
+#X text 569 178 sec/beat in 4/4, f 8;
+#X floatatom 525 244 5 0 0 0 - - - 0 0 1, f 5;
+#X obj 525 271 / 4;
+#X floatatom 525 299 5 0 0 0 - - - 0 0 1, f 5;
+#X text 577 297 ms per 1/16th;
+#X obj 525 218 * 1000;
+#X text 613 55 Compute 16th of a beat in ms at 4/4: 1/(bpm/60) is beats/sec
+\, divide by 4 to get a 16th \, then *1000 for ms. Adjust accordingly
+, f 33;
+#X obj 42 197 metro;
+#X floatatom 527 34 5 0 0 0 - - - 0 0 1, f 5;
+#X text 42 19 Test of inC melodic cells. This is cell one \, which
+has 3 quarter notes E's each one with an appoggiatura from C. Like
+all other cells \, it should be repeated from 1 to 3 times;
+#X connect 0 0 1 0;
+#X connect 0 1 1 1;
+#X connect 2 0 0 0;
+#X connect 3 0 2 0;
+#X connect 5 0 6 0;
+#X connect 5 1 6 1;
+#X connect 7 0 8 0;
+#X connect 8 0 5 0;
+#X connect 9 0 0 1;
+#X connect 10 0 0 2;
+#X connect 11 0 5 1;
+#X connect 12 0 5 2;
+#X connect 14 0 41 0;
+#X connect 15 0 17 0;
+#X connect 16 0 23 0;
+#X connect 17 0 18 0;
+#X connect 18 0 17 1;
+#X connect 18 0 20 0;
+#X connect 19 0 17 1;
+#X connect 20 0 16 0;
+#X connect 23 0 3 0;
+#X connect 23 1 7 0;
+#X connect 23 2 22 0;
+#X connect 26 0 39 0;
+#X connect 27 0 29 1;
+#X connect 29 0 30 0;
+#X connect 30 0 32 1;
+#X connect 31 0 32 0;
+#X connect 32 0 26 0;
+#X connect 33 0 31 0;
+#X connect 35 0 36 0;
+#X connect 36 0 37 0;
+#X connect 37 0 41 1;
+#X connect 39 0 35 0;
+#X connect 41 0 15 0;
+#X connect 42 0 29 0;
+#X connect 42 0 33 0;
