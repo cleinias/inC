@@ -18,9 +18,14 @@
 ~createMelPatterns = {
 	// Create all the 53 melodic patterns in Riley's "In C"
 	// Return a vector of dictionaries, one per pattern
-
-    // Durations are expressed as fraction of a beat, or more precisely as a fraction of a quarter note.
-    // TODO: Conversion of durations from beats to millisecond must be carried out when the score is created
+    // Pitches are expressed as integers starting from 0, representing scale degrees.
+    //
+    //          Notice that sharps are represented as .1 and flats as .9,
+    //          e.g C# = 0.1, while Db = 0.9. See the Literals doc page for details
+    //
+    // Durations are expressed as fractions of a beat, or more precisely as a fraction of a quarter note.
+    // TODO: Conversion of durations from beats to millisecond must be carried out
+    //       when the score is created
 
 	var melCells;
     melCells= [
@@ -33,7 +38,7 @@
     Dictionary.newFrom([\pitches,[Rest(),2,3,4],\durs,[0.5,0.5,0.5,0.5]]),
     Dictionary.newFrom([\pitches,[2,3,4,Rest()],\durs,[0.5,0.5,0.5,0.5]]),
     Dictionary.newFrom([\pitches,[7],\durs,[8]]),
-    Dictionary.newFrom([\pitches,[Rest(),Rest(),Rest(),Rest(),0,0,0,Rest(),Rest(),Rest(),Rest(),Rest],
+        Dictionary.newFrom([\pitches,[Rest(),Rest(),Rest(),Rest(),0,0,0,Rest(),Rest(),Rest(),Rest(),Rest()],
                         \durs, [1,1,1,0.5,0.25,0.25,0.5,0.5,1,1,1,1]]),
     Dictionary.newFrom([\pitches,[4,3],\durs,[6,8]]),
     Dictionary.newFrom([\pitches,[6,4,Rest(),Rest(),Rest(),Rest()],\durs,[0.25,0.25,0.5,1,1,1]]),
@@ -99,25 +104,35 @@
 // - total duration should be equal to
 a = ~createMelPatterns.value;
 ['Patterns in score --> ', a.size].postln;
-a.do({|item i| [i+1, "-> ",item[\pitches].size,item[\durs].size,'total beats-->',item[\durs].sum,item[\pitches],item[\durs]].postln;});
+a.do({|item i| [i+1, "-> ", '# of pitches == # of durations?', (item[\pitches].size == item[\durs].size), 'total beats-->',item[\durs].sum,item[\pitches],item[\durs]].postln;});
 )
+////////////////////////////
 
-(// Auditory testing:
- //Play each pattern once, wait a second in between
+
+
+ // Auditory testing:
+ // Play each pattern once, wait a second in between
+(
 ~testMelPatterns = {
-	| patterns tempo |
+//	| tempo |
 	// Play all melodic patterns in sequence at tempo, with a little rest in between
 	// Use fork passed to a routine (indicated with {} ) to pause between Pbinds
-	{
+	var patterns = ~createMelPatterns.value;
+    var tempo = 60;
+    {
 		patterns.do({ |item i|
-			Pbind(\degree, Pseq(item.at(\pitches),1),
-				  \dur,    Pseq(item.at(\durs),1)).play;
-			2.wait;})
+            [i+1, " --> ", item[\pitches]].postln;
+            (Pbind(\degree, Pseq(item.[\pitches],1),
+                   \octave, 5,                       // middle C octave
+                   \dur,   Pseq(item[\durs],1)).play;
+            12.wait;)})
 	    }.fork(TempoClock(tempo/60));
-	};
-a = ~testMelPatterns.value(~createMelPatterns.value,60);
-a.stop;
+       }.value
 )
+///////
+
+
+
 
 // Create a small collection of some common instruments
 // from the SCLOrk quark (Santa Clara Laptop Orchestra Quark)
@@ -125,7 +140,7 @@ a.stop;
 // TODO: Load a small collection of SCLOrk instruments onto the server,
 // put a reference into the following dictionary
 
-/
+~patterns[1].at(\pitches).inspect
 
 // TODO: the instruments are not loaded into SynthDefs (in the newt to last line of the function)
 (
