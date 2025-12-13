@@ -98,17 +98,23 @@
     }
 )
 
-(//Testing:
+
+//////////////// Score tests ///////////////////////////////////////
+
+//Testing:
 // - all patterns should have equal number of pitches and durations
 // - there shoud be 53 patterns
-// - total duration should be equal to
-a = ~createMelPatterns.value;
+// - total duration should be equal to 260
+
+(var a = ~createMelPatterns.value, scoreSize;
 ['Patterns in score --> ', a.size].postln;
 a.do({|item i| [i+1, "-> ", '# of pitches == # of durations?', (item[\pitches].size == item[\durs].size), 'total beats-->',item[\durs].sum,item[\pitches],item[\durs]].postln;});
+scoreSize = a.collect({|cell| cell[\durs]}).flatten.sum;
+["score size is equal to 260? ", scoreSize == 260, "--> ", scoreSize].postln;
 )
 ////////////////////////////
 
-
+a = ~createMelPatterns.value; a.(\pitches).flatten;
 
  // Auditory testing:
  // Play each pattern once, wait a second in between
