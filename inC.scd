@@ -1,6 +1,6 @@
-/********************************************************************************************************************
+/*******************************************************************************************
                In C - Phase one implementation, a minimal working prototype
-*********************************************************************************************************************/
+********************************************************************************************/
 
 
 /* A minimal test with:
@@ -121,17 +121,69 @@ a.do({|item i| [i+1, "-> ", '# of pitches == # of durations?', (item[\pitches].s
     var tempo = 60;
     {
 		patterns.do({ |item i|
-            [i+1, " --> ", item[\pitches]].postln;
+             [i+1, " --> ", item[\pitches]].postln;
             (Pbind(\degree, Pseq(item.[\pitches],1),
                    \octave, 5,                       // middle C octave
                    \dur,   Pseq(item[\durs],1)).play;
-            12.wait;)})
+            5.wait;)})
 	    }.fork(TempoClock(tempo/60));
        }.value
 )
+
+(
+~testMelPatterns = {
+//	| tempo |
+	// Play all melodic patterns in sequence at tempo, with a little rest in between
+	// Use fork passed to a routine (indicated with {} ) to pause between Pbinds
+	var patterns = ~createMelPatterns.value;
+    var tempo = 100;
+    {
+		patterns.do({ |item i|
+             [i+1, " --> ", item[\pitches]].postln;
+            (Pbind(\degree, Pseq(item.[\pitches],1),
+                   \octave, 5,                       // middle C octave
+                   \dur,   Pseq(item[\durs],1)).play;
+            5.wait;)})
+	    }.fork(TempoClock(tempo/60));
+       }.value
+)
+
+
+// Test a specific cell
+
+(
+~testSingleCell = {
+    //Decrements the argument by one  to let the user
+    //refer to pattern numbers as 1 to 53
+    |cellNo=0, octave=5|
+    var cell, patterns = ~createMelPatterns.value, tempo = 60;
+
+    if ((cellNo>patterns.size).or(cellNo < 0))
+              {"Required cell number is not present in the score".postln;}
+              {cellNo = cellNo - 1;
+              cell = patterns[cellNo];
+              //cell[\pitches].postln;
+              Pbind(\degree, Pseq(cell[\pitches],1),
+                    \octave, octave,
+                    \dur, Pseq(cell[\durs], 1)).play}}
+)
+// example
+~testSingleCell.(24)
+);
+
 ///////
 
-
+(
+TempoClock.default.tempo = 1;
+p = Pbind(
+    \degree, Pseq([
+        Pseries({ rrand(0, 7) }, 1, { rrand(4, 8) }),    // up (step = 1)
+        Pseries({ rrand(0, 7) }, 1, { rrand(4, 8) }),    // up (step = 1)
+        Pseries({ rrand(7, 14) }, -1, { rrand(4, 8) })    // down (step = -1)
+    ], inf),
+    \dur, 0.125
+).play;
+)
 
 
 // Create a small collection of some common instruments
@@ -171,7 +223,6 @@ a.do({|item i| [i+1, "-> ", '# of pitches == # of durations?', (item[\pitches].s
     synthDefs;
 }
 )
-
 
 // testing: load instruments and play a C maj lydian scale on each one of them in turn
 (
@@ -221,12 +272,12 @@ instrs.do({
     //patternsFunction.postln;
     if (patternsFunction.isNil, {"Error: Performance needs a vector of melody cells to be instantiated".postln});
 
-    //an empty players argument picks the default instruments (kind and kind as per called function)
+    //an empty instruments argument picks the default instruments (a 5 elements array of MDPianos
     if (instruments.isNil,
         {instruments = ~defaultInstruments.value()});
-
+    instruments.size.postln;
     performance[\tempo]=tempo;
-    performance[\playersNum]=players.size;
+    performance[\playersNum]=instruments.size;
     performance[\performLength]=performLength;
     performance[\basicScore]=patternsFunction.value;
 
@@ -241,9 +292,11 @@ instrs.do({
     performance;
 }
 )
-//testing
+// testing,
+// REMEMBER to evaluate the ~defaultInstruments and ~createPlayerScoreInAdvance functions first
 (
-p=~createPerformance.value(performLength:5, patternsFunction:~createMelPatterns);
+var p;
+p=~createPerformance.value(performLength:15, patternsFunction:~createMelPatterns);
 p[\players].size.postln;
 p[\players].do({|item i|item[\score][\pitches].size.postln});
 //p.inspect
@@ -280,24 +333,54 @@ I will start with the simpler (a) options first.
 */
 
 (
-~computeCellReps= {
+~computeCellReps = {
         /*
-         Compute the (approx.) number of repetitions a cell need (based on the ratio between single cell and score)
-         and the desired total length at a given tempo
+         Compute the (approx.) number of repetitions a single cell needs
+         (based on the ratio between single cell and score)
+         and the desired total length at a given tempo.
+
+         Care need to be taken in choosing the combination of tempo and performance length
+         to avoid impossible computations (e.g. tempo of 60bpm and performance length of 2 minutes).
+         For reference, at 60 bpm, a performance with NO reps takes 260 seconds and in general,
+         the minimum performance length IN MINUTES (no reps), should not be lower than
+
+         scoreLength / tempo
+
+         mellCells = the array of melodic cells
+         cell = a single cell from the array
+         tempo = the desired tempo in BPM
+         perfLength = the desired total length of the performance in MINUTES
         */
     |melCells cell tempo perfLength|
-    var desLengthBeats, reps ;
-    desLengthBeats = (((perfLength * 60) / melCells.size)*(tempo/60)).round;  //appr. desired *total* length in beats
-    reps = ((desLengthBeats/cell[\durs].sum)+0.5).round.asInteger; //approximate number of reps needed, minimum of 1
-    reps;
+    var avgReps, reps, scoreLength, totalBeatLength, minMaxAdd;
+    scoreLength = melCells.collect({|cell| cell[\durs]}).flatten.sum;
+    totalBeatLength = perfLength * tempo;                   // performance length in beats
+    avgReps = totalBeatLength / scoreLength;                // average repetition  per cell
+    minMaxAdd =  (avgReps).rand - (avgReps/2);              //compute a random factor to add to the avg
+    reps = (avgReps + minMaxAdd).floor;
+    // testing
+    // [avgReps.floor, "  ", reps].postln;
+    // reps;
 };
+)
+(
+var a , melCells;
+melCells = ~createMelPatterns.value;
+a = ~computeCellReps.value(melCells, melCells[1], 100, 15);
+a.postln
 )
 
 (
+~pippo = [Dictionary.newFrom([\a, 1, \b, 2, \c, 4]), Dictionary.newFrom([\a, 3, \b, 4, \c, 5])];
+~pippo.collect({|item| item[\a]})
+)
+(
 //testing
 var melCells = ~createMelPatterns.value();
-p = ~computeCellReps.value(melCells, melCells[0],120, 1);
-p.postln;
+var scoreLength; //in beats
+var temp;
+scoreLength= melCells.collect({|cell| cell[\durs]}).collect({|item| item.sum()}).sum;
+
 )
 
 (
@@ -324,34 +407,35 @@ p.postln;
 
     | melCells perfLength tempo instrument |
 
-    var actualScore, player=Dictionary.new,score, pitches=List.new(), durs=List.new();
-    player[\score]=Dictionary.newFrom([\pitches,pitches,\durs, durs]); // Flattened representation of the complete score as [\pitches,\durs]
-    score = melCells;
+    var actualScore, player=Dictionary.new, score, pitches=List.new(), durs=List.new();
+    player[\score]=Dictionary.newFrom([\pitches,pitches,\durs, durs]); // Holder for a flattened representation of the complete score as [\pitches,\durs]. Starts with 2 empty lists
+    //score = melCells;
     melCells.do({
         |item i|
         var reps, cell, pitches, durs;
         cell = Dictionary.new;
-        reps = ~computeCellReps.value(melCells:score,cell:item, tempo:tempo, perfLength:perfLength);
+        reps = ~computeCellReps.value(melCells:melCells,cell:item, tempo:tempo, perfLength:perfLength);
         // we may want to add some more stuff here in the future,
         // such as likelihood of octave jumps, slight push/drag, etc.
         //
         //Multiply the cell's pitches and durs by a random number of reps
         //and add them to the player's actual score array
+        [i, item[\durs].flatten.sum,reps].postln;
         reps = rrand(reps-1,reps+1);  //may have to change to account for cell's length
         player[\score][\pitches].addAll(item[\pitches].dup(reps).flatten);
         player[\score][\durs].addAll(item[\durs].dup(reps).flatten);
-        //test
-        player[\score][\pitches].size.postln;
-        player[\score][\durs].size.postln;
         });
         //testing
         player[\score][\pitches].size.postln;
         player[\score][\durs].size.postln;
-    // shouldImplement (instrument selection not implemented yet)
+        // shouldImplement (instrument selection not implemented yet)
         player[\instrument]=0;
     };
 )
-
+(
+~pippo = ~createPlayerScoreInAdvance.value(melCells:~createMelPatterns.value(), perfLength:15, tempo:100, instrument:0);
+// ~pippo.inspect
+)
 (~defaultInstruments={
     |instr=5|
     // Return an array of identical default SynthDefs, defaults to 5
@@ -427,7 +511,8 @@ q.stop
 * Scratch*/
 */
 
-(~scratchBPS = 100; // perf tempo
+(
+~scratchBPS = 100; // perf tempo
 ~scratchTotalBeats = 248.5; // total beats for all 53 patterns
 ~singleRepLength = ~scratchTotalBeats / (~scratchBPS/60); //total duration in secs of all combined patterns
 ~scratchDesiredLength = [45,90]; //min and max performance lengths in minutes as per Riley's score
@@ -456,8 +541,8 @@ b.postln;
 		(item ! reps).flatten(0); // ! is a shorcut for Array.dup()
 	});
 ~pitches.flatten(2).postln;
-);
 )
+
 (
 Pswitch(
 	~cells.collect { |cell| Pseq(cell, 1) },
@@ -487,11 +572,6 @@ b = Pbind(
         );
 b.play
 )
-20.10.rand2;
-rrand(2,3)
-~cell
- Quarks.gui
-
 
 /*
  The following (simplified) example from the docs works fine (assuming Midi Through is connected to an actual synth,
@@ -522,5 +602,3 @@ p = Pbind(
 
 p.stop;
 */
-
-List[1,2].addAll([3])
