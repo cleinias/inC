@@ -435,17 +435,8 @@ I will start with the simpler (a) options first.
     // reps;
 };
 )
-(
-var a , melCells;
-melCells = ~createMelPatterns.value;
-a = ~computeCellReps.value(melCells, melCells[1], 100, 15);
-a.postln
-)
 
-(
-~pippo = [Dictionary.newFrom([\a, 1, \b, 2, \c, 4]), Dictionary.newFrom([\a, 3, \b, 4, \c, 5])];
-~pippo.collect({|item| item[\a]})
-)
+
 (
 //testing
 var melCells = ~createMelPatterns.value();
@@ -504,13 +495,49 @@ scoreLength= melCells.collect({|cell| cell[\durs]}).collect({|item| item.sum()})
         player[\instrument]=0;
     };
 )
+
+// Testing
 (
+// A dummy instrument
 ~pippo = ~createPlayerScoreInAdvance.value(melCells:~createMelPatterns.value,
                                            perfLength:15,
                                            tempo:100,
                                            instrument:0);
 // ~pippo.inspect
 )
+
+// testing on external MIDI
+// Plays the complete score of an instrument of a selected MIDI channel
+// Will need to adjust octave to fit instrument's range
+(
+~testInstrumentMIDI = {
+    |instrument, cellNo=0, channel=0, amp = 0.3, octave = 5 |
+    var pitches, durs;
+    pitches = instrument[\score][\pitches];
+    durs = instrument[\score][\durs];
+    if (instrument.notNil) {
+        var mOut, cell, patterns = ~createMelPatterns.value, tempo = 60;
+        mOut = MIDIOut(0).latency_(Server.default.latency);
+        Pbind(
+              \type, \midi,
+              \amp, amp,
+              \midicmd, \noteOn,
+              \midiout, mOut,
+              \chan, channel,
+              // degree is converted to midinote, not just frequency
+              \degree,  Pseq(pitches,1),
+              \octave, octave,
+              \dur, Pseq(durs, 1),
+              ).play;//(quant: 1);
+        }
+        {"Cannot play without an instrument".postln;}
+    }
+)
+(
+//var instr = ~createPlayerScoreInAdvance.value();
+p = ~testInstrumentMIDI.value(~pippo);
+)
+
 (~defaultInstruments={
     |instr=5|
     // Return an array of identical default SynthDefs, defaults to 5
