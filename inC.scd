@@ -161,35 +161,102 @@ a = ~createMelPatterns.value; a.(\pitches).flatten;
 ~testSingleCell = {
     //Decrements the argument by one  to let the user
     //refer to pattern numbers as 1 to 53
-    |cellNo=0, octave=5|
+    |cellNo=0, octave=5 |
     var cell, patterns = ~createMelPatterns.value, tempo = 60;
 
     if ((cellNo>patterns.size).or(cellNo < 0))
               {"Required cell number is not present in the score".postln;}
               {cellNo = cellNo - 1;
               cell = patterns[cellNo];
-              //cell[\pitches].postln;
               Pbind(\degree, Pseq(cell[\pitches],1),
                     \octave, octave,
                     \dur, Pseq(cell[\durs], 1)).play}}
 )
 // example
-~testSingleCell.(24)
+(~testSingleCell.(24)
 );
 
-///////
+
+
+
+// Test cells via MIDI
+//
+// Use external instruments loaded in a plugin host.
+// Need to make sure host is already initialized externally with proper instruments
+// AND supercollider's' MIDI connection to host is established externally
+// with patch manager (qpwgraph, helvum, or similar).
+// Notice that this arrangement is Linux-specific
+
+
+// Test a specific cell via MIDI
+//
+(
+~testSingleCellMIDI = {
+    |cellNo=0, channel=0, amp = 0.3 |
+    var mOut, cell, patterns = ~createMelPatterns.value, tempo = 60;
+    mOut = MIDIOut(0).latency_(Server.default.latency);
+    if ((cellNo>patterns.size).or(cellNo < 0))
+              {"Required cell number is not present in the score".postln;}
+              {cellNo = cellNo - 1;
+              cell = patterns[cellNo];
+              Pbind(
+              \type, \midi,
+              \amp, amp,
+              \midicmd, \noteOn,
+              \midiout, mOut,
+              \chan, channel,
+              // degree is converted to midinote, not just frequency
+              \degree,  Pseq(cell[\pitches],1),
+              \dur, Pseq(cell[\durs], 1),
+              ).play;//(quant: 1);
+              }
+            }
+)
+
+
+// Test all cells via MIDI
 
 (
-TempoClock.default.tempo = 1;
-p = Pbind(
-    \degree, Pseq([
-        Pseries({ rrand(0, 7) }, 1, { rrand(4, 8) }),    // up (step = 1)
-        Pseries({ rrand(0, 7) }, 1, { rrand(4, 8) }),    // up (step = 1)
-        Pseries({ rrand(7, 14) }, -1, { rrand(4, 8) })    // down (step = -1)
-    ], inf),
-    \dur, 0.125
-).play;
+~testMelPatternsMIDI = {
+//	| tempo |
+	// Play all melodic patterns in sequence at tempo via MIDI, with a little rest in between
+	// Use fork passed to a routine (indicated with {} ) to pause between Pbinds
+	| channel = 0, amp = 0.3, octave=5 |
+    var mOut, patterns = ~createMelPatterns.value;
+    var tempo = 100;
+    mOut = MIDIOut(0).latency_(Server.default.latency);
+      {
+		patterns.do({ |item i|
+             [i+1, " --> ", item[\pitches]].postln;
+            (Pbind(
+                   \type , \midi,
+                   \amp, amp,
+                   \midimd, \noteOn,
+                   \midiout, mOut,
+                   \degree, Pseq(item.[\pitches],1),
+                   \octave, octave,                       // middle C octave = 5
+                   \dur,   Pseq(item[\durs],1)).play;
+            5.wait;)})
+	    }.fork(TempoClock(tempo/60));
+}.value;
 )
+
+(
+~p = ~testMelPatternsMIDI.value;
+)
+
+
+
+MIDIClient.init;    // if not already done
+(
+p=~testSingleCellMIDI.(3,3);
+)
+p.stop;
+
+
+
+
+///////
 
 
 // Create a small collection of some common instruments
@@ -198,9 +265,8 @@ p = Pbind(
 // TODO: Load a small collection of SCLOrk instruments onto the server,
 // put a reference into the following dictionary
 
-~patterns[1].at(\pitches).inspect
 
-// TODO: the instruments are not loaded into SynthDefs (in the newt to last line of the function)
+// TODO: the instruments are not loaded into SynthDefs (in the next to last line of the function)
 (
 ~commonSclorkInstr = {
      // Load a small selection of SCLOrk common instruments if not loaded already.
@@ -273,7 +339,7 @@ instrs.do({
         It the only parameters that does not have a default and must always be passed.
         It will eventually be replaced with a proper method to the MelodicCells class
   */
-    |instruments, performLength = 5, tempo = 120, patternsFunction |
+    |instruments, performLength = 15, tempo = 120, patternsFunction |
     var performance = Dictionary.new, players = Array.new;
     //patternsFunction.postln;
     if (patternsFunction.isNil, {"Error: Performance needs a vector of melody cells to be instantiated".postln});
@@ -303,9 +369,9 @@ instrs.do({
 (
 var p;
 p=~createPerformance.value(performLength:15, patternsFunction:~createMelPatterns);
-p[\players].size.postln;
-p[\players].do({|item i|item[\score][\pitches].size.postln});
-//p.inspect
+p(\players).size.postln;
+p(\players).do({|item i|item[\score][\pitches].size.postln});
+p.inspect
 )
 /*********************************
 *** 1-C Creating the players *
@@ -439,7 +505,10 @@ scoreLength= melCells.collect({|cell| cell[\durs]}).collect({|item| item.sum()})
     };
 )
 (
-~pippo = ~createPlayerScoreInAdvance.value(melCells:~createMelPatterns.value(), perfLength:15, tempo:100, instrument:0);
+~pippo = ~createPlayerScoreInAdvance.value(melCells:~createMelPatterns.value,
+                                           perfLength:15,
+                                           tempo:100,
+                                           instrument:0);
 // ~pippo.inspect
 )
 (~defaultInstruments={
@@ -458,9 +527,8 @@ scoreLength= melCells.collect({|cell| cell[\durs]}).collect({|item| item.sum()})
 
 
 (
-//testing player creation
+//testing individualized scores creation
 a = ~createMelPatterns.value;
-//a.class;
 b = ~createPlayerScoreInAdvance.value(melCells:a, perfLength:35, tempo:100, instrument:nil);
 b.class.postln;
 b[\score][\pitches].size.postln;
@@ -584,21 +652,22 @@ b.play
  I used fluidsynth to test).
  TODO: Not clear how to connect to other midi in ports, though. Check the destination (after init) with:
  MIDIClient.destinations;
+*/
 
-
-// MIDIClient.init;    // if not already done
-//
+MIDIClient.init;    // if not already done
+~mOut = MIDIOut(0).latency_(Server.default.latency);
 
 (
 // substitute your own device here
-var    mOut = MIDIOut.newByName("Midi Through", "Midi Through Port-0").latency_(Server.default.latency);
+//var    mOut = MIDIOut.newByName("Midi Through", "Midi Through   Port-0").latency_(Server.default.latency);
 
 p = Pbind(
     \type, \midi,
     // this line is optional b/c noteOn is the default
     // just making it explicit here
+    \amp, 0.3,
     \midicmd, \noteOn,
-    \midiout, mOut,    // must provide the MIDI target here
+    \midiout, ~mOut,    // must provide the MIDI target here
     \chan, 0,
     // degree is converted to midinote, not just frequency
     \degree, Pseq([1,3,5,8],1),
