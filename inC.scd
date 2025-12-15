@@ -161,6 +161,7 @@ a = ~createMelPatterns.value; a.(\pitches).flatten;
 ~testSingleCell = {
     //Decrements the argument by one  to let the user
     //refer to pattern numbers as 1 to 53
+    // Use legato
     |cellNo=0, octave=5 |
     var cell, patterns = ~createMelPatterns.value, tempo = 60;
 
@@ -170,7 +171,8 @@ a = ~createMelPatterns.value; a.(\pitches).flatten;
               cell = patterns[cellNo];
               Pbind(\degree, Pseq(cell[\pitches],1),
                     \octave, octave,
-                    \dur, Pseq(cell[\durs], 1)).play}}
+                    \dur, Pseq(cell[\durs], 1),
+                    \legato, 1).play}}
 )
 // example
 (~testSingleCell.(24)
@@ -187,13 +189,18 @@ a = ~createMelPatterns.value; a.(\pitches).flatten;
 // with patch manager (qpwgraph, helvum, or similar).
 // Notice that this arrangement is Linux-specific
 
+// Remember to run
+MIDIClient.init;
+//and to connect the output to the synth input (Kontakt, most likely in qpwgraph)
 
 // Test a specific cell via MIDI
-//
+// Use legato
+// Change tempo outside of the Pbind
 (
 ~testSingleCellMIDI = {
-    |cellNo=0, channel=0, amp = 0.3 |
-    var mOut, cell, patterns = ~createMelPatterns.value, tempo = 60;
+    |cellNo=1, channel=0, amp = 0.3 |
+    var mOut, cell, patterns, tempo = 100;
+    patterns = ~createMelPatterns.value;
     mOut = MIDIOut(0).latency_(Server.default.latency);
     if ((cellNo>patterns.size).or(cellNo < 0))
               {"Required cell number is not present in the score".postln;}
@@ -208,12 +215,14 @@ a = ~createMelPatterns.value; a.(\pitches).flatten;
               // degree is converted to midinote, not just frequency
               \degree,  Pseq(cell[\pitches],1),
               \dur, Pseq(cell[\durs], 1),
+              \tempo,tempo/60, // Beats per second
+              \legato, 1,      // Full length of the notes
               ).play;//(quant: 1);
               }
             }
 )
 
-
+~testSingleCellMIDI.value(8, 2);
 // Test all cells via MIDI
 
 (
@@ -245,85 +254,183 @@ a = ~createMelPatterns.value; a.(\pitches).flatten;
 ~p = ~testMelPatternsMIDI.value;
 )
 
-
-
-MIDIClient.init;    // if not already done
+/**********************************************
+*** 1-B Setting up the instruments
+***********************************************/
 (
-p=~testSingleCellMIDI.(3,3);
-)
-p.stop;
+// Set up a global variable holding the parameters
+// for the different instument to use.
+// NOTICE: the \channel parameter indicates a MIDI
+//         channel, and the external synth must be
+//         set up accordingly
+//
+// NOTICE ALSO: Only 16 instruments max per MIDI instance,
+//              a bigger orchestra requires two external
+//              synth instances.
+// AND ALSO: the \range parameter indicates the number of
+//           octaves from C4 is the lowest C the instrument can play.
+//           So, the cello, for instance, has a range of -2,
+//           and the double bass has also \range = -2, even though
+//           its lowest note is E1.
 
 
+~createInstruments = {
+    var instrument, instruments;
+    instruments = Dictionary.new();
+    // Piano
+    instrument = Dictionary.new();
+    instrument[\channel]= 0;
+    instrument[\range]= 0;  // Of course
+    instrument[\legato] =  1;
+    instrument[\pan] = 0; // for now --> all centered
+    instruments[\piano]= instrument;
 
+    // Flute
+    instrument = Dictionary.new();
+    instrument[\channel]= 1;
+    instrument[\range]= 0;
+    instrument[\legato] =  1;
+    instrument[\pan] = 0; // for now --> all centered
+    instruments[\piano]= instrument;
 
-///////
+    // Alto sax
+    instrument = Dictionary.new();
+    instrument[\channel]= 2;
+    instrument[\range]= 0;  // Lowest note is Eb3
+    instrument[\legato] =  1;
+    instrument[\pan] = 0; // for now --> all centered
+    instruments[\altoSax]= instrument;
 
+    // Tenor Sax
+    instrument = Dictionary.new();
+    instrument[\channel]= 3;
+    instrument[\range]= -1;   // Lowest note Ab3
+    instrument[\legato] =  1;
+    instrument[\pan] = 0; // for now --> all centered
+    instruments[\tenSax]= instrument;
 
-// Create a small collection of some common instruments
-// from the SCLOrk quark (Santa Clara Laptop Orchestra Quark)
+    // Cello
+    instrument = Dictionary.new();
+    instrument[\channel]= 4;
+    instrument[\range]= -2;   // Lowest note C2
+    instrument[\legato] =  1;
+    instrument[\pan] = 0; // for now --> all centered
+    instruments[\cello]= instrument;
 
-// TODO: Load a small collection of SCLOrk instruments onto the server,
-// put a reference into the following dictionary
+    // Viola
+    instrument = Dictionary.new();
+    instrument[\channel]= 5;
+    instrument[\range]= -1; // Lowest note is C3
+    instrument[\legato] =  1;
+    instrument[\pan] = 0; // for now --> all centered
+    instruments[\viola]= instrument;
 
+    // Acoustic (upright or double) bass
+    instrument = Dictionary.new();
+    instrument[\channel]= 6;
+    instrument[\range]= -2;       // Lowest note E1
+    instrument[\legato] =  1;
+    instrument[\pan] = 0; // for now --> all centered
+    instruments[\bass]= instrument;
 
-// TODO: the instruments are not loaded into SynthDefs (in the next to last line of the function)
-(
-~commonSclorkInstr = {
-     // Load a small selection of SCLOrk common instruments if not loaded already.
-     // Return a collection of synthDefs
-     var sclorkCommon, synthDefs;
-    // Check the SCLork quark is installed, install otherwise
-    if (Quarks.isInstalled("SCLOrkSynths"),
-        {"SCLorkSynths installed already".postln;},
-        {"Installing SCLOrkSynths...".postln;
-         Quarks.installQuark(SCLOrkSynths);
-         "SCLorkSynths installed".postln;});
-    // Choose a few instruments
-    sclorkCommon = [\cheapPiano1, \kalimba, \xylophone, \waveguideFlute, \pluck];  /// demo instrs with: SCLOrkSynths.gui
-    synthDefs = Array.new(sclorkCommon.size);
-    // Check if they are loaded, load them otherwise
-    sclorkCommon.do({
-        | item i |
-        if (SynthDescLib.global.synthDescs.at(item).isNil,
-            {"I should load -->".post; item.postln;
-             "xx".postln;
-             item.post;" loaded".postln;},
-            {item.post;" is loaded already".postln;}); // TODO: Here you load the instrument
-        synthDefs.add("??");  // TODO: here you pass the synthDef
-      });
-    // return a collection with the loaded instruments' SynthDefs
-    synthDefs;
+    // Guitar
+    instrument = Dictionary.new();
+    instrument[\channel]= 7;
+    instrument[\range]= -1;   // Lowest note E2
+    instrument[\legato] =  1;
+    instrument[\pan] = 0; // for now --> all centered
+    instruments[\guitar]= instrument;
+
+    // Bass clarinet
+    instrument = Dictionary.new();
+    instrument[\channel]= 8;
+    instrument[\range]= 0;
+    instrument[\legato] =  1;
+    instrument[\pan] = 0; // for now --> all centered
+    instruments[\bassClarinet]= instrument;
+
+    // Bb Clarinet
+    instrument = Dictionary.new();
+    instrument[\channel]= 9;
+    instrument[\range]= -2;   // Lowest note is Bb1
+    instrument[\legato] =  1;
+    instrument[\pan] = 0; // for now --> all centered
+    instruments[\clarinet]= instrument;
+
+    // Tenor Recorder
+    instrument = Dictionary.new();
+    instrument[\channel]= 10;
+    instrument[\range]= 0;  //Lowest note is C4
+    instrument[\legato] =  1;
+    instrument[\pan] = 0; // for now --> all centered
+    instruments[\tenRecorder]= instrument;
+
+    // Alto Recorder
+    instrument = Dictionary.new();
+    instrument[\channel]= 11;
+    instrument[\range]= 1;   // Lowest note is F4
+    instrument[\legato] =  1;
+    instrument[\pan] = 0; // for now --> all centered
+    instruments[\altoRec]= instrument;
+
+    // Soprano Recorder
+    instrument = Dictionary.new();
+    instrument[\channel]= 12;
+    instrument[\range]= 1;   // Lowest note is C5
+    instrument[\legato] =  1;
+    instrument[\pan] = 0; // for now --> all centered
+    instruments[\sopRecorder]= instrument;
+
+    // Sopranino Recorder
+    instrument = Dictionary.new();
+    instrument[\channel]= 13;
+    instrument[\range]= 3 ;   // Lowest note is F5
+    instrument[\legato] =  1;
+    instrument[\pan] = 0; // for now --> all centered
+    instruments[\sopraninRecorder]= instrument;
+
+    //
+    // // Oboe
+    // instrument = Dictionary.new();
+    // instrument[\channel]= 14;
+    // instrument[\range]= -1;    // Lowest note B3
+    // instrument[\legato] =  1;
+    // instrument[\pan] = 0; // for now --> all centered
+    // instruments[\oboe]= instrument;
+
+    // Trumpet
+    instrument = Dictionary.new();
+    instrument[\channel]= 14;
+    instrument[\range]= 0;   // Lowest note is F#4
+    instrument[\legato] =  1;
+    instrument[\pan] = 0; // for now --> all centered
+    instruments[\trumpet]= instrument;
+
+    // Organ
+    instrument = Dictionary.new();
+    instrument[\channel]= 15;
+    instrument[\range]= 0;   // of course
+    instrument[\legato] =  1;
+    instrument[\pan] = 0; // for now --> all centered
+    instruments[\organ]= instrument;
+
+/*
+    // Trombone
+    instrument = Dictionary.new();
+    instrument[\channel]= 0;
+    instrument[\range]= -1;   // Lowest note is E2
+    instrument[\legato] =  1;
+    instrument[\pan] = 0; // for now --> all centered
+    instruments[\trombone]= instrument;*/
 }
 )
+~createInstruments.value.inspect
 
-// testing: load instruments and play a C maj lydian scale on each one of them in turn
-(
-var scale = [0,1,2,3.1,4,5,6,7], instrs;
-instrs= ~commonSclorkInstr.value();
-instrs.inspect;
-instrs.do({
-    |item i|
-    "Now playing ".post; item.postln;
-    Pbind(\instr, item,
-          \degree, Pseq(scale,1),
-          \dur, 0.5).play;});
-)
-
-(
-    var scale = [0,1,2,3.1,4,5,6,7], pbinds=List.new,instrs;
-    instrs= ~commonSclorkInstr.value();
-    pbinds=instrs.collect({
-        | item i|
-         Pbind(\instr, item,
-          \degree, Pseq(scale,1),
-          \dur, 0.5).play;});
-    pbinds.do({|item i| item.play});
-)
 /***********************************************
-*** 1-B Setting up a performance's parameters  *
+*** 1-C Setting up a performance's parameters  *
 ************************************************/
 
-// 1-B-1 Setting up general performance parameters
+// 1-C-1 Setting up general performance parameters
 
 (
 ~createPerformance = {
@@ -374,7 +481,7 @@ p(\players).do({|item i|item[\score][\pitches].size.postln});
 p.inspect
 )
 /*********************************
-*** 1-C Creating the players *
+*** 1-D Creating the players *
 **********************************/
 
 /*
@@ -564,15 +671,15 @@ b[\score][\durs].size.postln;
 
 
 /*********************************
-*** 1-D Performing the score     *
+*** 1-E Performing the score     *
 **********************************/
 
-// 1-D-1 Setup
-// 1-D-11 General setup if needed (SynthDef definition, Midi connections, etc)
-// 1-D-12 Create the performance (with 0 instruments, will default to 5, performLength = 5, tempo = 120, patternsFunction )
+// 1-E-1 Setup
+// 1-E-11 General setup if needed (SynthDef definition, Midi connections, etc)
+// 1-E-12 Create the performance (with 0 instruments, will default to 5, performLength = 5, tempo = 120, patternsFunction )
    ~perf = p=~createPerformance.value(patternsFunction:~createMelPatterns);
 
-// 1-C-2 Execute the performance
+// 1-E-2 Execute the performance
 (
 ~executePerformance = {
     /*
@@ -602,7 +709,7 @@ q.stop
 // Need to free al the SynthDefs?
 
 /************************************************
-*** 1-E  Helper functions and code snippets     *
+*** 1-F  Helper functions and code snippets     *
 *************************************************/
 
 
