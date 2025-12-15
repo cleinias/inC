@@ -1,3 +1,4 @@
+
 ##  In C
 
 ### Project description
@@ -59,7 +60,7 @@ The project is planned to proceed through several stages of increasing complexit
 ## 0 - General setup
 
 
-All data and algorithms of *In C* are contained within three main objects:
+All data and algorithms of *In C* are contained within four main objects:
 
 - *MelodicPatterns*
   The repository of melody cells
@@ -67,11 +68,14 @@ All data and algorithms of *In C* are contained within three main objects:
 - *Performance*
   Contains parameters about number of players, duration, and tempo (for now)
 
-- *Players*
+- *Player*
   Data about the players, including their scores and instruments
+  
+- *Instrument*
+  Data about specific parameters to be used by concrete instruments, 
+  such as *range*, articulation (legato, etc), and so on. 
 
-
-In the first test, the three main objects are represented by environment variables, later phases may refactor to classes.
+In the first test, the four main objects are represented by environment variables, later phases may refactor to classes.
 
 
 ## 1 - Phase 1 description
