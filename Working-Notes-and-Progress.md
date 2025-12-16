@@ -100,3 +100,29 @@ p = Pbind(
 test
 test
 ```
+## More on Patterns and Pbind
+
+Issues to solve on using Pbind to drive the external synth. Answers most likely
+to be found in Harkins' Pattern guide, and also in the SuperCollider Book, chapter 6. And in particular:
+1. An overall description of the even types and associated parameters (including
+   all types associated with MIDI) is in chapter 8.
+
+
+How to:
+
+### Have different sequences play in sync?
+Check the `\quant` key. 
+
+Check out the `Ppar` pattern
+### Change the volume (amp or velocity)?
+### Change the tempo of the overall performance?
+Look into changing `tempoClock` for the whole performance.
+### Change octave (or key more generally) of the sequence?
+Perhaps just add a constant to the `\pitches` in the specific player instance? 
+Or perhaps transpose (to take care also of transposing instruments, perhaps): 
+look into `\mtranspose` and its cognates (check out the SuperCollider book, sec. 6.2.2) 
+### Affect articulation?
+Look into the pattern *PmonoArtic* (check out the Help files) for using legato and articulation on phrases
+### Use pan to place instruments in the stereo spectrum?
+### Play in a less robotic fashion?
+Look into using the `\lag`  and `\timingOff` keys 
