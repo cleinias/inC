@@ -324,6 +324,7 @@ MIDIClient.init;
     instrument[\range]= 0;  // Of course
     instrument[\legato] =  1;
     instrument[\pan] = 0; // for now --> all centered
+    instrument[\name]= "Piano";
     instruments[\piano]= instrument;
 
     // Flute
@@ -332,7 +333,8 @@ MIDIClient.init;
     instrument[\range]= 0;
     instrument[\legato] =  1;
     instrument[\pan] = 0; // for now --> all centered
-    instruments[\piano]= instrument;
+    instrument[\name]= "Transverse Flute";
+    instruments[\flute]= instrument;
 
     // Alto sax
     instrument = Dictionary.new();
@@ -340,6 +342,7 @@ MIDIClient.init;
     instrument[\range]= 0;  // Lowest note is Eb3
     instrument[\legato] =  1;
     instrument[\pan] = 0; // for now --> all centered
+    instrument[\name]= "Alto Sax";
     instruments[\altoSax]= instrument;
 
     // Tenor Sax
@@ -348,6 +351,7 @@ MIDIClient.init;
     instrument[\range]= -1;   // Lowest note Ab3
     instrument[\legato] =  1;
     instrument[\pan] = 0; // for now --> all centered
+    instrument[\name]= "Tenor Sax";
     instruments[\tenSax]= instrument;
 
     // Cello
@@ -356,6 +360,7 @@ MIDIClient.init;
     instrument[\range]= -2;   // Lowest note C2
     instrument[\legato] =  1;
     instrument[\pan] = 0; // for now --> all centered
+    instrument[\name]= "Cello";
     instruments[\cello]= instrument;
 
     // Viola
@@ -364,6 +369,7 @@ MIDIClient.init;
     instrument[\range]= -1; // Lowest note is C3
     instrument[\legato] =  1;
     instrument[\pan] = 0; // for now --> all centered
+    instrument[\name]= "Viola";
     instruments[\viola]= instrument;
 
     // Acoustic (upright or double) bass
@@ -372,6 +378,7 @@ MIDIClient.init;
     instrument[\range]= -2;       // Lowest note E1
     instrument[\legato] =  1;
     instrument[\pan] = 0; // for now --> all centered
+    instrument[\name]= "Double Bass";
     instruments[\bass]= instrument;
 
     // Guitar
@@ -380,6 +387,7 @@ MIDIClient.init;
     instrument[\range]= -1;   // Lowest note E2
     instrument[\legato] =  1;
     instrument[\pan] = 0; // for now --> all centered
+    instrument[\name]= "Guitar";
     instruments[\guitar]= instrument;
 
     // Bass clarinet
@@ -388,6 +396,7 @@ MIDIClient.init;
     instrument[\range]= 0;
     instrument[\legato] =  1;
     instrument[\pan] = 0; // for now --> all centered
+    instrument[\name]= "Bass Clarinet";
     instruments[\bassClarinet]= instrument;
 
     // Bb Clarinet
@@ -396,39 +405,61 @@ MIDIClient.init;
     instrument[\range]= -2;   // Lowest note is Bb1
     instrument[\legato] =  1;
     instrument[\pan] = 0; // for now --> all centered
+    instrument[\name]= "Clarinet";
     instruments[\clarinet]= instrument;
 
+    // Bass(et) Recorder
+    // Using the Embertone samples, which has just one instruments for all standard 5 sizes
+    // Use the same channel and change the range
+    instrument = Dictionary.new();
+    instrument[\channel]= 10;
+    instrument[\range]= 0;  //Lowest note is F3
+    instrument[\legato] =  1;
+    instrument[\pan] = 0; // for now --> all centered
+    instrument[\name]= "Bass Recorder";
+    instruments[\bassRec]= instrument;
+
     // Tenor Recorder
+    // Using the Embertone samples, which has just one instruments for all standard 5 sizes
+    // Use the same channel and change the range
     instrument = Dictionary.new();
     instrument[\channel]= 10;
     instrument[\range]= 0;  //Lowest note is C4
     instrument[\legato] =  1;
     instrument[\pan] = 0; // for now --> all centered
-    instruments[\tenRecorder]= instrument;
+    instrument[\name]= "Tenor Recorder";
+    instruments[\tenorRec]= instrument;
 
     // Alto Recorder
+    // Using the Embertone samples, which has just one instruments for all standard 5 sizes
+    // Use the same channel and change the range
     instrument = Dictionary.new();
     instrument[\channel]= 11;
     instrument[\range]= 1;   // Lowest note is F4
     instrument[\legato] =  1;
     instrument[\pan] = 0; // for now --> all centered
+    instrument[\name]= "Alto Recorder";
     instruments[\altoRec]= instrument;
 
     // Soprano Recorder
+    // Use the same channel and change the range
     instrument = Dictionary.new();
-    instrument[\channel]= 12;
+    instrument[\channel]= 11;
     instrument[\range]= 1;   // Lowest note is C5
     instrument[\legato] =  1;
     instrument[\pan] = 0; // for now --> all centered
-    instruments[\sopRecorder]= instrument;
+    instrument[\name]= "Soprano Recorder";
+    instruments[\sopRec]= instrument;
 
     // Sopranino Recorder
+    // Use the same channel and change the range
     instrument = Dictionary.new();
-    instrument[\channel]= 13;
+    instrument[\channel]= 11;
     instrument[\range]= 3 ;   // Lowest note is F5
     instrument[\legato] =  1;
     instrument[\pan] = 0; // for now --> all centered
-    instruments[\sopraninRecorder]= instrument;
+    instrument[\name]= "Sopranino Recorder";
+    instruments[\sopraninRec]= instrument;
 
     //
     // // Oboe
@@ -437,6 +468,7 @@ MIDIClient.init;
     // instrument[\range]= -1;    // Lowest note B3
     // instrument[\legato] =  1;
     // instrument[\pan] = 0; // for now --> all centered
+    // instrument[\name]= "Oboe";
     // instruments[\oboe]= instrument;
 
     // Trumpet
@@ -445,6 +477,7 @@ MIDIClient.init;
     instrument[\range]= 0;   // Lowest note is F#4
     instrument[\legato] =  1;
     instrument[\pan] = 0; // for now --> all centered
+    instrument[\name]= "Trumpet";
     instruments[\trumpet]= instrument;
 
     // Organ
@@ -453,6 +486,7 @@ MIDIClient.init;
     instrument[\range]= 0;   // of course
     instrument[\legato] =  1;
     instrument[\pan] = 0; // for now --> all centered
+    instrument[\name]= "Organ";
     instruments[\organ]= instrument;
 
 /*
@@ -462,10 +496,11 @@ MIDIClient.init;
     instrument[\range]= -1;   // Lowest note is E2
     instrument[\legato] =  1;
     instrument[\pan] = 0; // for now --> all centered
+    instrument[\name]= "Trombone";
     instruments[\trombone]= instrument;*/
 }
 )
-~createInstruments.value.inspect
+~instruments = ~createInstruments.value;
 
 /***********************************************
 *** 1-C Setting up a performance's parameters  *
@@ -601,49 +636,42 @@ scoreLength= melCells.collect({|cell| cell[\durs]}).collect({|item| item.sum()})
 ~createPlayerScoreInAdvance = {
     /* Return a player object (aDictionary) with a full instantiated score constructed
        from melCells and lengths, plus an instrument to play it with.
-       melCells is the array of melodic cells,
+
+        melCells is the array of melodic cells,
        perfLength is desired performance length in minutes
        tempo is in bpm
-       instrument is still to be decided, most likely a synthDef,
-                  unless the output is redirected to a MIDI capable player via MIDIout.
-                  Kontakt hosted on Carla works fine, but it needs to be initialized first,
-                  and then connected to the MIDIOut instance in Helvum or qpwgraph.
-                  Then each player must be assigned a different MIDI channel, corresponding
-                  to the instrument loaded into Kontakt. Notice however that MIDI connections
-                  may carry a maximum of 16 channels, which means a performance with more than 16
-                  instruments will require multiple Kontakt (or similar) instances.
-                  Notice also that the MIDI channel should be decided by the performance object
-                  by assigning a channel number from the available pool.
-                  Or, alternatively, by extracting channel numbers from a dictionary indexed
-                  by instrument (and which assumes a suitable arrangement on the Kontakt back-end).
-                  (see docs: Using patterns for sending MIDI events, Pattern Guide Cookbook 4.)
-                   */
+       instrument is a key to the global variable ~instruments, a dictionary indexed
+                  by instruments names.
+    */
 
     | melCells perfLength tempo instrument |
 
     var actualScore, player=Dictionary.new, score, pitches=List.new(), durs=List.new();
     player[\score]=Dictionary.newFrom([\pitches,pitches,\durs, durs]); // Holder for a flattened representation of the complete score as [\pitches,\durs]. Starts with 2 empty lists
     //score = melCells;
+        player[\instrument]= ~instruments[instrument];
     melCells.do({
         |item i|
         var reps, cell, pitches, durs;
         cell = Dictionary.new;
-        reps = ~computeCellReps.value(melCells:melCells,cell:item, tempo:tempo, perfLength:perfLength);
+        reps = ~computeCellReps.value(melCells:melCells,
+                                      cell:item,
+                                      tempo:tempo,
+                                      perfLength:perfLength);
         // we may want to add some more stuff here in the future,
         // such as likelihood of octave jumps, slight push/drag, etc.
         //
         //Multiply the cell's pitches and durs by a random number of reps
         //and add them to the player's actual score array
         [i, item[\durs].flatten.sum,reps].postln;
-        reps = rrand(reps-1,reps+1);  //may have to change to account for cell's length
+        reps = rrand(reps-1,reps+1);
         player[\score][\pitches].addAll(item[\pitches].dup(reps).flatten);
         player[\score][\durs].addAll(item[\durs].dup(reps).flatten);
         });
         //testing
         player[\score][\pitches].size.postln;
         player[\score][\durs].size.postln;
-        // shouldImplement (instrument selection not implemented yet)
-        player[\instrument]=0;
+        player;
     };
 )
 
@@ -653,33 +681,33 @@ scoreLength= melCells.collect({|cell| cell[\durs]}).collect({|item| item.sum()})
 ~pippo = ~createPlayerScoreInAdvance.value(melCells:~createMelPatterns.value,
                                            perfLength:15,
                                            tempo:100,
-                                           instrument:0);
-// ~pippo.inspect
+                                           instrument:\trumpet);
+~pippo.postln
 )
 
 // testing on external MIDI
 // Plays the complete score of an instrument of a selected MIDI channel
 // Will need to adjust octave to fit instrument's range
 (
-~testInstrumentMIDI = {
-    |instrument, cellNo=0, channel=0, amp = 0.3, mtranspose = 0 |
-    var pitches, durs;
-    pitches = instrument[\score][\pitches];
-    durs = instrument[\score][\durs];
-    if (instrument.notNil) {
-        var mOut, cell, patterns = ~createMelPatterns.value, tempo = 60;
+~testPlayerMIDI = {
+    |player, amp = 0.3|
+    var pitches, durs, instrument;
+    pitches = player[\score][\pitches];
+    durs = player[\score][\durs];
+    instrument = player[\instrument];
+    if (player.notNil) {
+        var mOut, patterns = ~createMelPatterns.value, tempo = 60;
         mOut = MIDIOut(0).latency_(Server.default.latency);
         Pbind(
               \type, \midi,
               \amp, amp,
               \midicmd, \noteOn,
               \midiout, mOut,
-              \chan, channel,
-              // degree is converted to midinote, not just frequency
+              \chan, instrument[\channel],
               \degree,  Pseq(pitches,1),
-              \mtranspose, mtranspose,
+              \mtranspose, instrument[\range]*7,
               \dur, Pseq(durs, 1),
-              \legato, 1,
+              \legato, instrument[\legato],
               \tempo, 100/60
               ).play;//(quant: 1);
         }
@@ -687,8 +715,7 @@ scoreLength= melCells.collect({|cell| cell[\durs]}).collect({|item| item.sum()})
     }
 )
 (
-//var instr = ~createPlayerScoreInAdvance.value();
-p = ~testInstrumentMIDI.value(~pippo);
+p = ~testPlayerMIDI.(~pippo);
 )
 
 (~defaultInstruments={
@@ -709,7 +736,7 @@ p = ~testInstrumentMIDI.value(~pippo);
 (
 //testing individualized scores creation
 a = ~createMelPatterns.value;
-b = ~createPlayerScoreInAdvance.value(melCells:a, perfLength:35, tempo:100, instrument:nil);
+b = ~createPlayerScoreInAdvance.value(melCells:a, perfLength:35, tempo:100, instrument:\cello);
 b.class.postln;
 b[\score][\pitches].size.postln;
 b[\score][\durs].size.postln;
@@ -803,63 +830,6 @@ b.postln;
 ~pitches.flatten(2).postln;
 )
 
-(
-Pswitch(
-	~cells.collect { |cell| Pseq(cell, 1) },
-	Pdup(
-		Pwhite(2, 5, inf),
-		Pn(Pseries(0, 1, ~cells.size), inf)
-	)
-)
-.asStream.nextN(50)
-)
 
-(
-~cells = [ [ 1, 3, 5, 7], [1, 3, 2]];
-Pflatten(1, Pdup(Pwhite(2, 5, inf), Pseq(~cells, inf)))
-.asStream.nextN(50)
-)
 
-m = Pn(Pseq([1,2,3]),2).asStream.nextN(10);
-m.next()
 
-(
-r = 3; ~cell = [[1, 3, 5,8],[1,0.5,0.5,1]];
-n = rrand(r-1,r+1);
-b = Pbind(
-    \degree, Pseq(~cell[0],n),
-    \dur, Pseq(~cell[1],n),
-        );
-b.play
-)
-
-/*
- The following (simplified) example from the docs works fine (assuming Midi Through is connected to an actual synth,
- I used fluidsynth to test).
- TODO: Not clear how to connect to other midi in ports, though. Check the destination (after init) with:
- MIDIClient.destinations;
-*/
-
-MIDIClient.init;    // if not already done
-~mOut = MIDIOut(0).latency_(Server.default.latency);
-
-(
-// substitute your own device here
-//var    mOut = MIDIOut.newByName("Midi Through", "Midi Through   Port-0").latency_(Server.default.latency);
-
-p = Pbind(
-    \type, \midi,
-    // this line is optional b/c noteOn is the default
-    // just making it explicit here
-    \amp, 0.3,
-    \midicmd, \noteOn,
-    \midiout, ~mOut,    // must provide the MIDI target here
-    \chan, 0,
-    // degree is converted to midinote, not just frequency
-    \degree, Pseq([1,3,5,8],1),
-    \dur, Pseq([1,1,1,1], inf),
-).play(quant: 1);
-)
-
-p.stop;
-*/
