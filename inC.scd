@@ -9,6 +9,47 @@
 - no transposition
 */
 
+
+/**************************************************
+*** 0 - Executing instructions                    *
+***************************************************/
+
+/* 1. Set up the external MIDI synth player
+      1.1 Make sure the synth player's channels
+          correspond to the table that ~createInstruments
+          produces (see below)
+
+   2. Initialize the MIDIOut connection with
+      MIDIOut.init;
+
+   3. Connect Supercollider to the MIDI synth
+      (externally, in Carla, qpwgraph, etc.)
+
+   4. Choose players by creating an array of instruments
+      names using the symbols used in ~createInstruments,
+      e.g.:
+      players = [\piano, \piano, \organ, \trumpet, \trumpet];
+
+   5. Choose a performance length in minutes, and a tempo in bpm
+      Performance length in minutes cannot be shorter than
+      scoreLength/tempo, that is 260/tempo. For reference,
+      at the original tempo if 63bpm of the original perfomance,
+      the minimum performance length is 263/63 = 4.17 minutes.
+
+   6. Create the performance with (for instance):
+      ~perf = ~createPerformance(players, length , tempo , ~createMelPatterns)
+
+   7. Execute the performance with:
+      ~execPerf = ~executePerformance(~perf);
+
+   8. Stop the performance with
+     ~ ~execPerf.stop;
+
+*/
+
+
+
+
 /**************************************************
 *** 1-A Setting up the score and the instruments  *
 ***************************************************/
@@ -439,27 +480,30 @@ MIDIClient.init;
   // Return a dictionary with tempo, playersNum, performLength, basicScore, and an array of players
   //
   // Parameters
-  // - instruments:  an Array of SynthDef that will be used by the players.
-  // - length in minutes (Riley's instructions say 45 to 90', but we default to 5)
+  // - instruments:  an Array of symbols selecting the instruments that will be used by the
+  //                 players.
+  // - length in minutes (Riley's instructions say 45 to 90', but we default to 15')
   // - tempo (In standard bpm. Riley is rather vague about tempo)
   // - patternsFunction is a function that creates the vector of melodic cells.
         It the only parameters that does not have a default and must always be passed.
         It will eventually be replaced with a proper method to the MelodicCells class
   */
-    |instruments, performLength = 15, tempo = 120, patternsFunction |
+    |players, performLength = 15, tempo = 100, patternsFunction |
     var performance = Dictionary.new, players = Array.new;
     //patternsFunction.postln;
     if (patternsFunction.isNil, {"Error: Performance needs a vector of melody cells to be instantiated".postln});
 
     //an empty instruments argument picks the default instruments (a 5 elements array of MDPianos
-    if (instruments.isNil,
-        {instruments = ~defaultInstruments.value()});
-    instruments.size.postln;
+    if (players.isNil,
+        {players = ~defaultInstruments.value()});
+    players.size.postln;
     performance[\tempo]=tempo;
-    performance[\playersNum]=instruments.size;
+    performance[\playersNum]=players.size;
     performance[\performLength]=performLength;
     performance[\basicScore]=patternsFunction.value;
-
+//////////
+////////// TODO!!!!
+/////////
     //get an array of players with individualized scores and instruments
     performance[\players]=instruments.collect{
         |item i|
@@ -618,7 +662,7 @@ scoreLength= melCells.collect({|cell| cell[\durs]}).collect({|item| item.sum()})
 // Will need to adjust octave to fit instrument's range
 (
 ~testInstrumentMIDI = {
-    |instrument, cellNo=0, channel=0, amp = 0.3, octave = 5 |
+    |instrument, cellNo=0, channel=0, amp = 0.3, mtranspose = 0 |
     var pitches, durs;
     pitches = instrument[\score][\pitches];
     durs = instrument[\score][\durs];
@@ -633,8 +677,10 @@ scoreLength= melCells.collect({|cell| cell[\durs]}).collect({|item| item.sum()})
               \chan, channel,
               // degree is converted to midinote, not just frequency
               \degree,  Pseq(pitches,1),
-              \octave, octave,
+              \mtranspose, mtranspose,
               \dur, Pseq(durs, 1),
+              \legato, 1,
+              \tempo, 100/60
               ).play;//(quant: 1);
         }
         {"Cannot play without an instrument".postln;}
@@ -680,6 +726,12 @@ b[\score][\durs].size.postln;
    ~perf = p=~createPerformance.value(patternsFunction:~createMelPatterns);
 
 // 1-E-2 Execute the performance
+
+/////////////////////////////
+///////  TO DO !!! //////////
+/////////////////////////////
+
+
 (
 ~executePerformance = {
     /*
